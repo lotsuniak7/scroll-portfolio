@@ -61,6 +61,7 @@ export function Overlay() {
       {/* 2. RIGID SCROLL BLOCKS FOR THREE.JS HOLDS */}
       <section id="spacer-sae" style={{ height: '150vh', pointerEvents: 'none' }} />
       <section id="spacer-stage" style={{ height: '150vh', pointerEvents: 'none' }} />
+      <section id="spacer-reserv" style={{ height: '150vh', pointerEvents: 'none' }} />
       
       {/* 3. OUTRO - FINAL SCREEN */}
       <section id="spacer-outro" style={{ height: '60vh', pointerEvents: 'none', position: 'relative', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', paddingBottom: '10vh' }}>

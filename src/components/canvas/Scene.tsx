@@ -2,11 +2,11 @@
 'use client'
 
 /**
- * Scene.tsx — v10 (Flawless Cinematic Camera Holds)
+ * Scene.tsx — v11 (Flawless Cinematic Camera Holds for 3 Projects)
  *
  * Мы отодвинули камеру на дистанцию pz: 9.0, чтобы 3D-сетка выглядела объемно.
- * Текст больше не зависит от глубины камеры и всегда отображается на 100% четко.
- * Мертвые зоны удерживают анимацию во время скролла для удобства защиты.
+ * Теперь камера летит по 3 точкам (SAÉ -> Stage -> Réservation).
+ * Мертвые зоны синхронизированы с прозрачностью карточек в NetworkCore.tsx.
  */
 
 import { useRef, useEffect, useMemo } from 'react'
@@ -25,20 +25,20 @@ export const scrollProxy = { progress: 0 }
 
 type Pose = { px: number; py: number; pz: number; lx: number; ly: number; lz: number; mouseScale?: number }
 
-const SAE_X   = -5.625
-const SAE_Y   =  2.75
-const STAGE_X = -1.875
-const STAGE_Y =  0
+// Математика координат сетки из NetworkCore.tsx
+const SAE_X    = -5.625
+const SAE_Y    =  2.75
+const STAGE_X  = -1.875
+const STAGE_Y  =  0
+const RESERV_X =  1.875   // Новые координаты для 3-го проекта
+const RESERV_Y = -2.75    // Новые координаты для 3-го проекта
 
 const POSES: Record<string, Pose> = {
-  // Идеальный стартовый ракурс таблицы
-  hero:  { px: -0.5, py: 1.2, pz: 12.5, lx: -0.5, ly: 0.6, lz: 0, mouseScale: 0.8 },
-  
-  // Ракурсы для презентации (Камера красиво центрируется на ячейках на расстоянии 9.0)
-  sae:   { px: SAE_X, py: SAE_Y, pz: 9.0, lx: SAE_X, ly: SAE_Y, lz: 0, mouseScale: 0.05 },
-  stage: { px: STAGE_X, py: STAGE_Y, pz: 9.0, lx: STAGE_X, ly: STAGE_Y, lz: 0, mouseScale: 0.05 },
-  
-  outro: { px: 0, py: 1.5, pz: 14, lx: 0, ly: 0.5, lz: 0, mouseScale: 0.5 },
+  hero:   { px: -0.5,     py: 1.2,      pz: 12.5, lx: -0.5,     ly: 0.6,      lz: 0, mouseScale: 0.8 },
+  sae:    { px: SAE_X,    py: SAE_Y,    pz: 9.0,  lx: SAE_X,    ly: SAE_Y,    lz: 0, mouseScale: 0.05 },
+  stage:  { px: STAGE_X,  py: STAGE_Y,  pz: 9.0,  lx: STAGE_X,  ly: STAGE_Y,  lz: 0, mouseScale: 0.05 },
+  reserv: { px: RESERV_X, py: RESERV_Y, pz: 9.0,  lx: RESERV_X, ly: RESERV_Y, lz: 0, mouseScale: 0.05 }, // Добавлен фокус на Réservation
+  outro:  { px: 0,        py: 1.5,      pz: 14.0, lx: 0,        ly: 0.5,      lz: 0, mouseScale: 0.5 },
 }
 
 const camState: Pose = { ...POSES.hero }
@@ -67,15 +67,20 @@ function CameraRig() {
       },
     })
 
-    // Временная шкала с жесткими окнами фиксации (Holds) для чтения плана защиты
-    tl.to(camState, { ...POSES.sae, duration: 0.22, ease: "power2.inOut" }, 0.00)
-    tl.to({}, { duration: 0.23 }, 0.22) // Мертвая зона для SAÉ
+    // 1. Полет к SAÉ
+    tl.to(camState, { ...POSES.sae, duration: 0.15, ease: "power2.inOut" }, 0.00)
+    tl.to({}, { duration: 0.17 }, 0.15) // Остановка (Hold) для SAÉ
     
-    tl.to(camState, { ...POSES.stage, duration: 0.13, ease: "power2.inOut" }, 0.45)
-    tl.to({}, { duration: 0.22 }, 0.58) // Мертвая зона для Stage
+    // 2. Перелет к Stage
+    tl.to(camState, { ...POSES.stage, duration: 0.11, ease: "power2.inOut" }, 0.32)
+    tl.to({}, { duration: 0.17 }, 0.43) // Остановка (Hold) для Stage
     
-    tl.to(camState, { ...POSES.outro, duration: 0.15, ease: "power2.out" }, 0.80)
-    tl.to({}, { duration: 0.05 }, 0.95)
+    // 3. Перелет к Réservation (РАНЬШЕ ЭТОГО НЕ БЫЛО)
+    tl.to(camState, { ...POSES.reserv, duration: 0.11, ease: "power2.inOut" }, 0.60)
+    tl.to({}, { duration: 0.17 }, 0.71) // Остановка (Hold) для Réservation
+    
+    // 4. Отлет на финальный экран (Outro)
+    tl.to(camState, { ...POSES.outro, duration: 0.12, ease: "power2.out" }, 0.88)
 
     return () => { tl.kill() }
   }, [])

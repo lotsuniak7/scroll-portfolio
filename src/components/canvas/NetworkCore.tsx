@@ -30,11 +30,13 @@ function cellPos(col: number, row: number): [number, number, number] {
   return [OFFSET_X + col * STEP_X, OFFSET_Y + row * STEP_Y, 0]
 }
 
+// ДОБАВЛЕНА 3-Я КАРТОЧКА (AMBER)
 const ACTIVATIONS = [
   { col: 0, row: 2, color: EMERALD },
   { col: 1, row: 1, color: SKY },
+  { col: 2, row: 0, color: AMBER },
 ]
-const OUTRO_START = 0.80
+const OUTRO_START = 0.90
 
 // ─── Mastery badge levels ─────────────────────────────────────────────────────
 type MasteryLevel = 'Non maîtrisé' | 'En cours d\'acquisition' | 'Maîtrisé' | 'Maîtrise avancée'
@@ -169,7 +171,6 @@ function HoloGallery({ images, accent = EMERALD, label }: HoloGalleryProps) {
           </p>
         )}
 
-        {/* Main image frame (Click to Zoom) */}
         <div 
           onClick={() => setIsZoomed(true)}
           style={{
@@ -178,7 +179,6 @@ function HoloGallery({ images, accent = EMERALD, label }: HoloGalleryProps) {
             borderRadius: '10px', overflow: 'hidden', cursor: 'zoom-in'
           }}
         >
-          {/* Corner marks */}
           {(['tl', 'tr', 'bl', 'br'] as const).map(c => (
             <span key={c} style={{
               position: 'absolute', zIndex: 4,
@@ -192,7 +192,6 @@ function HoloGallery({ images, accent = EMERALD, label }: HoloGalleryProps) {
             }} />
           ))}
 
-          {/* Image Display */}
           {current.src ? (
             <img
               src={current.src}
@@ -210,7 +209,6 @@ function HoloGallery({ images, accent = EMERALD, label }: HoloGalleryProps) {
             </div>
           )}
 
-          {/* Infinite Numeric Navigation overlay */}
           {images.length > 1 && (
             <>
               <button onClick={prev} style={{ position: 'absolute', left: '8px', top: '50%', transform: 'translateY(-50%)', zIndex: 10, background: 'rgba(0,0,0,0.65)', border: `1px solid ${accent}44`, borderRadius: '6px', color: '#fff', cursor: 'pointer', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>‹</button>
@@ -231,7 +229,6 @@ function HoloGallery({ images, accent = EMERALD, label }: HoloGalleryProps) {
         )}
       </div>
 
-      {/* FULLSCREEN LIGHTBOX WITH NAVIGATION (УЛУЧШЕННЫЕ СТИЛИ КНОПОК) */}
       {isZoomed && current.src && (
         <div 
           onClick={() => setIsZoomed(false)}
@@ -352,7 +349,7 @@ function SaeCard() {
       <HoloDivider />
 
       <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
-        <a href="https://github.com" target="_blank" rel="noopener noreferrer" style={{ background: EMERALD, color: '#000000', fontFamily: MONO, fontSize: '11px', fontWeight: 700, padding: '9px 18px', borderRadius: '6px', textDecoration: 'none', letterSpacing: '0.05em' }}>
+        <a href="https://github.com/votre-github/sae501" target="_blank" rel="noopener noreferrer" style={{ background: EMERALD, color: '#000000', fontFamily: MONO, fontSize: '11px', fontWeight: 700, padding: '9px 18px', borderRadius: '6px', textDecoration: 'none', letterSpacing: '0.05em' }}>
           VOIR LE CODE SOURCE →
         </a>
       </div>
@@ -467,8 +464,87 @@ function StageCard() {
   )
 }
 
+// ─── NOUVEAU PROJET 3: MMI Réservation (Preuve 3) ─────────────────────────────
+function ReservCard() {
+  const reservImages: GalleryImage[] = [
+    { src: '/medias/reserv/actuel1.png', caption: 'GLPI (Avant) : Complexe, aucune image' },
+  ]
+
+  const acList: { code: string; label: string; mastery: MasteryLevel }[] = [
+    { code: 'AC34.01', label: 'Framework client (React / Next.js)',      mastery: 'Maîtrise avancée' },
+    { code: 'AC34.03', label: 'Dispositifs interactifs complexes',       mastery: 'Maîtrise avancée' },
+    { code: 'AC35.01', label: 'Pilotage technique d\'un produit',        mastery: 'Maîtrisé'         },
+  ]
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px' }}>
+        <div>
+          <HoloLabel color={AMBER}>Projet 03 — Compétence DWeb / Transverse</HoloLabel>
+          <h2 style={{ fontFamily: DISPLAY, fontSize: '24px', fontWeight: 700, letterSpacing: '-0.02em', color: '#ffffff', margin: '0 0 8px 0' }}>
+            MMI Réservation : App de Gestion de Matériel
+          </h2>
+          <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+            {['Next.js 14', 'Supabase', 'TypeScript', 'Tailwind'].map(t => <TechBadge key={t} name={t} />)}
+          </div>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '28px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          <HoloField label="S — Le problème (Situation)" accent={AMBER}>
+            Jusqu'à ce jour, le département MMI gérait le prêt de matériel audiovisuel via GLPI (un outil conçu pour l'informatique réseau). L'interface était dense, sans visuels, et surtout, les étudiants naviguaient à l'aveugle : impossible de savoir si une caméra était libre avant de la demander au secrétariat.
+          </HoloField>
+
+          <HoloField label="A — Mes choix et actions" accent={AMBER}>
+            En totale autonomie, j'ai développé "MMI Réservation". J'ai utilisé <strong>Next.js 14</strong> pour l'interface utilisateur et <strong>Supabase</strong> pour gérer l'authentification sécurisée, la base de données relationnelle et le stockage des images. J'ai surtout codé un algorithme critique (Server Actions) de gestion de la concurrence : si deux étudiants cliquent sur "Réserver" en même temps pour un objet unique, le système recalcule le stock à la milliseconde près et bloque la transaction du second.
+          </HoloField>
+
+          <HoloField label="R — Bilan et recul" accent={AMBER}>
+            L'application a été présentée au Secrétariat et aux étudiants avec un immense succès.
+            <span style={{ display: 'block', marginTop: '8px', paddingLeft: '10px', borderLeft: `2px solid ${AMBER}55`, color: '#fcd34d', fontSize: '13px', fontStyle: 'italic', lineHeight: 1.6 }}>
+              Posture réflexive : L'expérience de mener un produit logiciel de l'idée jusqu'à la production a été incroyablement formatrice. Gérer des cas limites comme la concurrence de requêtes m'a poussé à repenser ma façon de concevoir l'architecture back-end. Ce projet prouve ma capacité à résoudre un vrai besoin métier.
+            </span>
+          </HoloField>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
+          <HoloGallery images={reservImages} accent={AMBER} label="Aperçu du projet (Cliquez pour zoomer)" />
+        </div>
+      </div>
+
+      <HoloDivider />
+
+      <div>
+        <p style={{ fontFamily: MONO, fontSize: '10px', letterSpacing: '0.22em', textTransform: 'uppercase', color: AMBER, marginBottom: '10px', fontWeight: 600 }}>
+          Mon auto-évaluation sur les compétences (AC)
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          {acList.map(({ code, label, mastery }) => (
+            <div key={code} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', padding: '6px 10px', background: 'rgba(255,255,255,0.03)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.06)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
+                <HoloTag code={code} accent={AMBER} />
+                <span style={{ fontFamily: MONO, fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>{label}</span>
+              </div>
+              <MasteryBadge level={mastery} />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <HoloDivider />
+
+      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+        <a href="https://www.youtube.com/watch?v=aU0JbOKR55s" target="_blank" rel="noopener noreferrer" style={{ background: AMBER, color: '#000000', fontFamily: MONO, fontSize: '11px', fontWeight: 700, padding: '9px 18px', borderRadius: '6px', textDecoration: 'none', letterSpacing: '0.05em' }}>
+          VOIR LA DEMONSTARTION MMI RÉSERVATION →
+        </a>
+      </div>
+    </div>
+  )
+}
+
 // ─── Cell ─────────────────────────────────────────────────────────────────────
-interface CellProps { col: number; row: number; accentColor: string; outroStart: number; projectCard?: 'sae' | 'stage' }
+interface CellProps { col: number; row: number; accentColor: string; outroStart: number; projectCard?: 'sae' | 'stage' | 'reserv' }
 
 function Cell({ col, row, accentColor, outroStart, projectCard }: CellProps) {
   const innerRef = useRef<THREE.Mesh>(null)
@@ -480,29 +556,40 @@ function Cell({ col, row, accentColor, outroStart, projectCard }: CellProps) {
   const edgesGeo = useMemo(() => new THREE.EdgesGeometry(new THREE.BoxGeometry(CELL_W, CELL_H, 0.02)), [])
   const activation = useRef(0)
 
+  // ИСПРАВЛЕННАЯ МАТЕМАТИКА СКРОЛЛА (РАСШИРЕННЫЕ ТАЙМИНГИ ДЛЯ 3-Х ПРОЕКТОВ)
   useFrame(() => {
     const p = scrollProxy.progress
     let targetAlpha = 0
     let exactOpacity = 0
 
     if (col === 0 && row === 2) {
-      if (p >= 0.12 && p <= 0.52) {
-        targetAlpha = p >= 0.18 && p <= 0.48 ? 1 : 0.4
-        if (p >= 0.22 && p <= 0.45) exactOpacity = 1
-        else if (p < 0.22) exactOpacity = THREE.MathUtils.smoothstep(p, 0.14, 0.22)
-        else exactOpacity = 1 - THREE.MathUtils.smoothstep(p, 0.45, 0.52)
+      // Карточка 1 (SAÉ)
+      if (p >= 0.08 && p <= 0.38) {
+        targetAlpha = p >= 0.12 && p <= 0.34 ? 1 : 0.4
+        if (p >= 0.15 && p <= 0.32) exactOpacity = 1
+        else if (p < 0.15) exactOpacity = THREE.MathUtils.smoothstep(p, 0.10, 0.15)
+        else exactOpacity = 1 - THREE.MathUtils.smoothstep(p, 0.32, 0.38)
       }
     } else if (col === 1 && row === 1) {
-      if (p >= 0.48 && p <= 0.86) {
-        targetAlpha = p >= 0.54 && p <= 0.82 ? 1 : 0.4
-        if (p >= 0.58 && p <= 0.80) exactOpacity = 1
-        else if (p < 0.58) exactOpacity = THREE.MathUtils.smoothstep(p, 0.49, 0.58)
-        else exactOpacity = 1 - THREE.MathUtils.smoothstep(p, 0.80, 0.86)
+      // Карточка 2 (STAGE)
+      if (p >= 0.36 && p <= 0.66) {
+        targetAlpha = p >= 0.40 && p <= 0.62 ? 1 : 0.4
+        if (p >= 0.43 && p <= 0.60) exactOpacity = 1
+        else if (p < 0.43) exactOpacity = THREE.MathUtils.smoothstep(p, 0.38, 0.43)
+        else exactOpacity = 1 - THREE.MathUtils.smoothstep(p, 0.60, 0.66)
+      }
+    } else if (col === 2 && row === 0) {
+      // Карточка 3 (RESERV) - НОВАЯ
+      if (p >= 0.64 && p <= 0.94) {
+        targetAlpha = p >= 0.68 && p <= 0.90 ? 1 : 0.4
+        if (p >= 0.71 && p <= 0.88) exactOpacity = 1
+        else if (p < 0.71) exactOpacity = THREE.MathUtils.smoothstep(p, 0.66, 0.71)
+        else exactOpacity = 1 - THREE.MathUtils.smoothstep(p, 0.88, 0.94)
       }
     }
 
     if (p >= outroStart) {
-      const outroFactor = THREE.MathUtils.smoothstep(p, outroStart, 0.95)
+      const outroFactor = THREE.MathUtils.smoothstep(p, outroStart, 0.98)
       targetAlpha = Math.max(targetAlpha, outroFactor * 0.45)
     }
 
@@ -523,23 +610,17 @@ function Cell({ col, row, accentColor, outroStart, projectCard }: CellProps) {
 
   return (
     <group position={[wx, wy, wz]}>
-      <mesh ref={innerRef}>
-        <planeGeometry args={[CELL_W - 0.06, CELL_H - 0.06]} />
-        <meshStandardMaterial color="#b0d0ff" transparent opacity={0.04} roughness={0.05} metalness={0.4} side={THREE.DoubleSide} depthWrite={false} toneMapped={false} />
-      </mesh>
-      <lineSegments ref={frameRef} geometry={edgesGeo}>
-        <lineBasicMaterial color={accentColor} transparent opacity={0.22} toneMapped={false} />
-      </lineSegments>
-      <mesh ref={glowRef} position={[0, 0, -0.04]}>
-        <planeGeometry args={[CELL_W + 0.4, CELL_H + 0.4]} />
-        <meshStandardMaterial color={accentColor} emissive={accentColor} emissiveIntensity={1.5} transparent opacity={0} depthWrite={false} toneMapped={false} />
-      </mesh>
+      <mesh ref={innerRef}><planeGeometry args={[CELL_W - 0.06, CELL_H - 0.06]} /><meshStandardMaterial color="#b0d0ff" transparent opacity={0.04} roughness={0.05} metalness={0.4} side={THREE.DoubleSide} depthWrite={false} toneMapped={false} /></mesh>
+      <lineSegments ref={frameRef} geometry={edgesGeo}><lineBasicMaterial color={accentColor} transparent opacity={0.22} toneMapped={false} /></lineSegments>
+      <mesh ref={glowRef} position={[0, 0, -0.04]}><planeGeometry args={[CELL_W + 0.4, CELL_H + 0.4]} /><meshStandardMaterial color={accentColor} emissive={accentColor} emissiveIntensity={1.5} transparent opacity={0} depthWrite={false} toneMapped={false} /></mesh>
 
+      {/* ИСПРАВЛЕНА ОШИБКА БЛОКИРОВКИ СКРОЛЛА (УДАЛЕН MAXHEIGHT И OVERFLOWY) */}
       {projectCard && cardOpacity > 0.01 && (
         <Html center style={{ opacity: cardOpacity, transition: 'opacity 0.1s linear', pointerEvents: cardOpacity < 0.1 ? 'none' : 'auto', width: 'min(1020px, 92vw)', fontFamily: DISPLAY }}>
-          <div style={{ background: 'rgba(4, 5, 10, 0.98)', border: `1px solid ${accentColor}44`, borderLeft: `5px solid ${accentColor}`, borderRadius: '16px', padding: '22px 30px', boxShadow: '0 32px 64px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.04)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', maxHeight: '85vh', overflowY: 'auto' }}>
-            {projectCard === 'sae'   && <SaeCard   />}
-            {projectCard === 'stage' && <StageCard />}
+          <div style={{ background: 'rgba(4, 5, 10, 0.98)', border: `1px solid ${accentColor}44`, borderLeft: `5px solid ${accentColor}`, borderRadius: '16px', padding: '22px 30px', boxShadow: '0 32px 64px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.04)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}>
+            {projectCard === 'sae'    && <SaeCard   />}
+            {projectCard === 'stage'  && <StageCard />}
+            {projectCard === 'reserv' && <ReservCard />}
           </div>
         </Html>
       )}
@@ -555,11 +636,11 @@ function MatrixLabels() {
     <group>
       {colLabels.map((text, i) => {
         const x = OFFSET_X + i * STEP_X; const y = OFFSET_Y + (ROWS - 1) * STEP_Y + CELL_H * 0.5 + 0.45
-        return <Text key={`col-${i}`} position={[x, y, 0]} fontSize={0.24} color={i === 0 ? EMERALD : i === 1 ? SKY : '#64748b'} anchorX="center" anchorY="bottom" letterSpacing={0.05}>{text}</Text>
+        return <Text key={`col-${i}`} position={[x, y, 0]} fontSize={0.24} color={i === 0 ? EMERALD : i === 1 ? SKY : i === 2 ? AMBER : '#64748b'} anchorX="center" anchorY="bottom" letterSpacing={0.05}>{text}</Text>
       })}
       {rowLabels.map((text, i) => {
         const x = OFFSET_X - CELL_W * 0.5 - 0.45; const y = OFFSET_Y + i * STEP_Y
-        return <Text key={`row-${i}`} position={[x, y, 0]} fontSize={0.22} color={i === 2 ? EMERALD : i === 1 ? SKY : '#64748b'} anchorX="right" anchorY="middle" letterSpacing={0.08}>{text}</Text>
+        return <Text key={`row-${i}`} position={[x, y, 0]} fontSize={0.22} color={i === 2 ? EMERALD : i === 1 ? SKY : i === 0 ? AMBER : '#64748b'} anchorX="right" anchorY="middle" letterSpacing={0.08}>{text}</Text>
       })}
     </group>
   )
@@ -588,13 +669,14 @@ export function CompetencyMatrix() {
     if (groupRef.current) { groupRef.current.rotation.x = Math.sin(time.current * 0.15) * 0.012; groupRef.current.rotation.y = Math.sin(time.current * 0.10) * 0.015 }
   })
   const cells = useMemo(() => {
-    const items: { col: number; row: number; accentColor: string; projectCard?: 'sae' | 'stage' }[] = []
+    const items: { col: number; row: number; accentColor: string; projectCard?: 'sae' | 'stage' | 'reserv' }[] = []
     for (let row = 0; row < ROWS; row++) {
       for (let col = 0; col < COLS; col++) {
         const spec = ACTIVATIONS.find(a => a.col === col && a.row === row)
-        let projectCard: 'sae' | 'stage' | undefined
+        let projectCard: 'sae' | 'stage' | 'reserv' | undefined
         if (col === 0 && row === 2) projectCard = 'sae'
         if (col === 1 && row === 1) projectCard = 'stage'
+        if (col === 2 && row === 0) projectCard = 'reserv' // ПРИВЯЗКА ТРЕТЬЕГО ПРОЕКТА
         items.push({ col, row, accentColor: spec?.color ?? '#475569', projectCard })
       }
     }
