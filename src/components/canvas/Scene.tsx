@@ -114,7 +114,7 @@ export function Scene() {
       <CameraRig />
       <CompetencyMatrix />
 
-      <EffectComposer disableNormalPass multisampling={0}>
+      <EffectComposer multisampling={0}>
         <Bloom
           luminanceThreshold={0.6}
           luminanceSmoothing={0.8}
