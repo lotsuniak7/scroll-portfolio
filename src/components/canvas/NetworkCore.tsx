@@ -231,7 +231,7 @@ function HoloGallery({ images, accent = EMERALD, label }: HoloGalleryProps) {
         )}
       </div>
 
-      {/* FULLSCREEN LIGHTBOX WITH NAVIGATION */}
+      {/* FULLSCREEN LIGHTBOX WITH NAVIGATION (УЛУЧШЕННЫЕ СТИЛИ КНОПОК) */}
       {isZoomed && current.src && (
         <div 
           onClick={() => setIsZoomed(false)}
@@ -243,7 +243,7 @@ function HoloGallery({ images, accent = EMERALD, label }: HoloGalleryProps) {
           }}
         >
           {images.length > 1 && (
-            <div style={{ position: 'absolute', top: '30px', left: '40px', fontFamily: MONO, fontSize: '14px', color: '#fff', background: 'rgba(0,0,0,0.5)', padding: '6px 14px', borderRadius: '8px', border: `1px solid ${accent}44` }}>
+            <div style={{ position: 'absolute', top: '30px', left: '40px', fontFamily: MONO, fontSize: '14px', color: '#fff', background: 'rgba(0,0,0,0.7)', padding: '8px 16px', borderRadius: '8px', border: `1px solid ${accent}55`, boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }}>
               {index + 1} / {images.length}
             </div>
           )}
@@ -258,17 +258,17 @@ function HoloGallery({ images, accent = EMERALD, label }: HoloGalleryProps) {
           />
           
           {current.caption && (
-            <div style={{ position: 'absolute', bottom: '30px', left: '50%', transform: 'translateX(-50%)', background: 'rgba(0,0,0,0.9)', padding: '12px 24px', borderRadius: '8px', color: '#fff', fontFamily: DISPLAY, fontSize: '15px', border: `1px solid ${accent}55` }}>
+            <div style={{ position: 'absolute', bottom: '30px', left: '50%', transform: 'translateX(-50%)', background: 'rgba(0,0,0,0.9)', padding: '12px 24px', borderRadius: '8px', color: '#fff', fontFamily: DISPLAY, fontSize: '15px', border: `1px solid ${accent}55`, boxShadow: '0 8px 24px rgba(0,0,0,0.6)' }}>
               {current.caption}
             </div>
           )}
 
-          <button onClick={() => setIsZoomed(false)} style={{ position: 'absolute', top: '30px', right: '40px', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', fontSize: '32px', cursor: 'pointer', padding: '10px 20px', borderRadius: '8px', backdropFilter: 'blur(4px)' }}>✕</button>
+          <button onClick={() => setIsZoomed(false)} style={{ position: 'absolute', top: '30px', right: '40px', background: 'rgba(0,0,0,0.7)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', fontSize: '32px', cursor: 'pointer', padding: '8px 20px', borderRadius: '8px', backdropFilter: 'blur(8px)', boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }}>✕</button>
 
           {images.length > 1 && (
             <>
-              <button onClick={(e) => { e.stopPropagation(); prev(e); }} style={{ position: 'absolute', left: '40px', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', fontSize: '40px', cursor: 'pointer', padding: '20px', borderRadius: '12px', backdropFilter: 'blur(4px)' }}>‹</button>
-              <button onClick={(e) => { e.stopPropagation(); next(e); }} style={{ position: 'absolute', right: '40px', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', fontSize: '40px', cursor: 'pointer', padding: '20px', borderRadius: '12px', backdropFilter: 'blur(4px)' }}>›</button>
+              <button onClick={(e) => { e.stopPropagation(); prev(e); }} style={{ position: 'absolute', left: '40px', background: 'rgba(0,0,0,0.7)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', fontSize: '40px', cursor: 'pointer', padding: '15px 25px', borderRadius: '12px', backdropFilter: 'blur(8px)', boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }}>‹</button>
+              <button onClick={(e) => { e.stopPropagation(); next(e); }} style={{ position: 'absolute', right: '40px', background: 'rgba(0,0,0,0.7)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', fontSize: '40px', cursor: 'pointer', padding: '15px 25px', borderRadius: '12px', backdropFilter: 'blur(8px)', boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }}>›</button>
             </>
           )}
         </div>
