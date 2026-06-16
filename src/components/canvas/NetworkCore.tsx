@@ -128,7 +128,7 @@ function MasteryBadge({ level }: { level: MasteryLevel }) {
   )
 }
 
-// ─── Image Gallery / Slider ───────────────────────────────────────────────────
+// ─── Image Gallery / Slider with Infinite Scaling & Lightbox (Zoom) ───────────
 interface GalleryImage {
   src: string
   caption?: string
@@ -142,6 +142,7 @@ interface HoloGalleryProps {
 
 function HoloGallery({ images, accent = EMERALD, label }: HoloGalleryProps) {
   const [index, setIndex] = useState(0)
+  const [isZoomed, setIsZoomed] = useState(false)
 
   const prev = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
@@ -153,387 +154,299 @@ function HoloGallery({ images, accent = EMERALD, label }: HoloGalleryProps) {
     setIndex(i => (i + 1) % images.length)
   }, [images.length])
 
+  if (images.length === 0) return null
   const current = images[index]
 
-  if (images.length === 0) return null
-
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-      {label && (
-        <p style={{
-          fontFamily: MONO, fontSize: '10px', color: accent,
-          margin: '0 0 4px 0', textTransform: 'uppercase', letterSpacing: '0.12em',
-        }}>
-          {label}
-        </p>
-      )}
-
-      {/* Main image frame */}
-      <div style={{
-        position: 'relative', width: '100%', aspectRatio: '16/10',
-        background: 'rgba(0,0,0,0.6)', border: `1px solid ${accent}33`,
-        borderRadius: '10px', overflow: 'hidden',
-      }}>
-        {/* Corner marks */}
-        {(['tl', 'tr', 'bl', 'br'] as const).map(c => (
-          <span key={c} style={{
-            position: 'absolute', zIndex: 4,
-            top: c.startsWith('t') ? '8px' : 'auto',
-            bottom: c.startsWith('b') ? '8px' : 'auto',
-            left: c.endsWith('l') ? '8px' : 'auto',
-            right: c.endsWith('r') ? '8px' : 'auto',
-            width: '8px', height: '8px',
-            borderTop: c.startsWith('t') ? `1px solid ${accent}66` : 'none',
-            borderBottom: c.startsWith('b') ? `1px solid ${accent}66` : 'none',
-            borderLeft: c.endsWith('l') ? `1px solid ${accent}66` : 'none',
-            borderRight: c.endsWith('r') ? `1px solid ${accent}66` : 'none',
-          }} />
-        ))}
-
-        {/* Image or placeholder */}
-        {current.src ? (
-          <img
-            src={current.src}
-            alt={current.caption ?? `Image ${index + 1}`}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-          />
-        ) : (
-          <div style={{
-            width: '100%', height: '100%', display: 'flex', flexDirection: 'column',
-            alignItems: 'center', justifyContent: 'center', gap: '8px',
+    <>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        {label && (
+          <p style={{
+            fontFamily: MONO, fontSize: '10px', color: accent,
+            margin: '0 0 4px 0', textTransform: 'uppercase', letterSpacing: '0.12em',
           }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <rect x="2" y="2" width="20" height="20" rx="3" stroke={`${accent}66`} strokeWidth="1.5"/>
-              <circle cx="8" cy="8" r="2" fill={`${accent}66`}/>
-              <path d="M2 15L7 10L11 14L15 10L22 17" stroke={`${accent}66`} strokeWidth="1.5" strokeLinejoin="round"/>
-            </svg>
-            <p style={{
-              fontFamily: MONO, fontSize: '10px',
-              color: 'rgba(255,255,255,0.35)', letterSpacing: '0.08em', textAlign: 'center',
-            }}>
-              {current.caption ?? 'Aperçu à venir'}
-            </p>
-          </div>
+            {label}
+          </p>
         )}
 
-        {/* Navigation overlay — only show when multiple images */}
-        {images.length > 1 && (
-          <>
-            <button
-              onClick={prev}
-              style={{
-                position: 'absolute', left: '8px', top: '50%',
-                transform: 'translateY(-50%)', zIndex: 10,
-                background: 'rgba(0,0,0,0.65)', border: `1px solid ${accent}44`,
-                borderRadius: '6px', color: '#fff', cursor: 'pointer',
-                width: '28px', height: '28px', display: 'flex',
-                alignItems: 'center', justifyContent: 'center', padding: 0,
-                fontSize: '14px', lineHeight: 1,
-              }}
-            >
-              ‹
-            </button>
-            <button
-              onClick={next}
-              style={{
-                position: 'absolute', right: '8px', top: '50%',
-                transform: 'translateY(-50%)', zIndex: 10,
-                background: 'rgba(0,0,0,0.65)', border: `1px solid ${accent}44`,
-                borderRadius: '6px', color: '#fff', cursor: 'pointer',
-                width: '28px', height: '28px', display: 'flex',
-                alignItems: 'center', justifyContent: 'center', padding: 0,
-                fontSize: '14px', lineHeight: 1,
-              }}
-            >
-              ›
-            </button>
+        {/* Main image frame (Click to Zoom) */}
+        <div 
+          onClick={() => setIsZoomed(true)}
+          style={{
+            position: 'relative', width: '100%', aspectRatio: '16/10',
+            background: 'rgba(0,0,0,0.6)', border: `1px solid ${accent}33`,
+            borderRadius: '10px', overflow: 'hidden', cursor: 'zoom-in'
+          }}
+        >
+          {/* Corner marks */}
+          {(['tl', 'tr', 'bl', 'br'] as const).map(c => (
+            <span key={c} style={{
+              position: 'absolute', zIndex: 4,
+              top: c.startsWith('t') ? '8px' : 'auto', bottom: c.startsWith('b') ? '8px' : 'auto',
+              left: c.endsWith('l') ? '8px' : 'auto', right: c.endsWith('r') ? '8px' : 'auto',
+              width: '8px', height: '8px',
+              borderTop: c.startsWith('t') ? `1px solid ${accent}66` : 'none',
+              borderBottom: c.startsWith('b') ? `1px solid ${accent}66` : 'none',
+              borderLeft: c.endsWith('l') ? `1px solid ${accent}66` : 'none',
+              borderRight: c.endsWith('r') ? `1px solid ${accent}66` : 'none',
+            }} />
+          ))}
 
-            {/* Counter pill */}
+          {/* Image Display */}
+          {current.src ? (
+            <img
+              src={current.src}
+              alt={current.caption ?? `Image ${index + 1}`}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+            />
+          ) : (
             <div style={{
-              position: 'absolute', bottom: '10px', left: '50%',
-              transform: 'translateX(-50%)', zIndex: 10,
-              background: 'rgba(0,0,0,0.7)', borderRadius: '999px',
-              padding: '3px 10px', display: 'flex', gap: '6px',
-              alignItems: 'center',
+              width: '100%', height: '100%', display: 'flex', flexDirection: 'column',
+              alignItems: 'center', justifyContent: 'center', gap: '8px',
             }}>
-              {images.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={(e) => { e.stopPropagation(); setIndex(i) }}
-                  style={{
-                    width: i === index ? '16px' : '6px',
-                    height: '6px',
-                    borderRadius: '999px',
-                    background: i === index ? accent : 'rgba(255,255,255,0.3)',
-                    border: 'none', cursor: 'pointer', padding: 0,
-                    transition: 'all 0.2s ease',
-                  }}
-                />
-              ))}
+              <p style={{ fontFamily: MONO, fontSize: '10px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.08em' }}>
+                {current.caption ?? 'Aperçu à venir'}
+              </p>
             </div>
-          </>
+          )}
+
+          {/* Infinite Numeric Navigation overlay */}
+          {images.length > 1 && (
+            <>
+              <button onClick={prev} style={{ position: 'absolute', left: '8px', top: '50%', transform: 'translateY(-50%)', zIndex: 10, background: 'rgba(0,0,0,0.65)', border: `1px solid ${accent}44`, borderRadius: '6px', color: '#fff', cursor: 'pointer', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>‹</button>
+              <button onClick={next} style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', zIndex: 10, background: 'rgba(0,0,0,0.65)', border: `1px solid ${accent}44`, borderRadius: '6px', color: '#fff', cursor: 'pointer', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>›</button>
+              
+              {/* COMPACT COUNTER (1 / 25) - Allows infinite images without breaking UI */}
+              <div style={{ position: 'absolute', bottom: '10px', right: '10px', zIndex: 10, background: 'rgba(0,0,0,0.85)', borderRadius: '6px', padding: '4px 10px', border: `1px solid ${accent}44`, display: 'flex', alignItems: 'center' }}>
+                <span style={{ fontFamily: MONO, fontSize: '10px', color: '#ffffff', letterSpacing: '0.1em' }}>
+                  {index + 1} / {images.length}
+                </span>
+              </div>
+            </>
+          )}
+        </div>
+        {current.caption && current.src && (
+          <p style={{ fontFamily: MONO, fontSize: '10px', color: 'rgba(255,255,255,0.45)', letterSpacing: '0.06em', margin: 0, textAlign: 'center' }}>
+            {current.caption}
+          </p>
         )}
       </div>
 
-      {/* Caption */}
-      {current.caption && current.src && (
-        <p style={{
-          fontFamily: MONO, fontSize: '10px',
-          color: 'rgba(255,255,255,0.45)', letterSpacing: '0.06em',
-          margin: 0, textAlign: 'center',
-        }}>
-          {current.caption}
-        </p>
+      {/* FULLSCREEN LIGHTBOX WITH NAVIGATION */}
+      {isZoomed && current.src && (
+        <div 
+          onClick={() => setIsZoomed(false)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 999999,
+            background: 'rgba(5, 5, 8, 0.98)', backdropFilter: 'blur(15px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'zoom-out', padding: '40px'
+          }}
+        >
+          {/* Lightbox Counter */}
+          {images.length > 1 && (
+            <div style={{ position: 'absolute', top: '30px', left: '40px', fontFamily: MONO, fontSize: '14px', color: '#fff', background: 'rgba(0,0,0,0.5)', padding: '6px 14px', borderRadius: '8px', border: `1px solid ${accent}44` }}>
+              {index + 1} / {images.length}
+            </div>
+          )}
+
+          <img 
+            src={current.src} 
+            alt="Zoom" 
+            style={{
+              maxWidth: '100%', maxHeight: '100%', objectFit: 'contain',
+              borderRadius: '8px', boxShadow: '0 20px 60px rgba(0,0,0,0.8)'
+            }} 
+          />
+          
+          {current.caption && (
+            <div style={{ position: 'absolute', bottom: '30px', left: '50%', transform: 'translateX(-50%)', background: 'rgba(0,0,0,0.9)', padding: '12px 24px', borderRadius: '8px', color: '#fff', fontFamily: DISPLAY, fontSize: '15px', border: `1px solid ${accent}55` }}>
+              {current.caption}
+            </div>
+          )}
+
+          <button onClick={() => setIsZoomed(false)} style={{ position: 'absolute', top: '30px', right: '40px', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', fontSize: '32px', cursor: 'pointer', padding: '10px 20px', borderRadius: '8px', backdropFilter: 'blur(4px)' }}>✕</button>
+
+          {images.length > 1 && (
+            <>
+              <button onClick={(e) => { e.stopPropagation(); prev(e); }} style={{ position: 'absolute', left: '40px', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', fontSize: '40px', cursor: 'pointer', padding: '20px', borderRadius: '12px', backdropFilter: 'blur(4px)' }}>‹</button>
+              <button onClick={(e) => { e.stopPropagation(); next(e); }} style={{ position: 'absolute', right: '40px', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', fontSize: '40px', cursor: 'pointer', padding: '20px', borderRadius: '12px', backdropFilter: 'blur(4px)' }}>›</button>
+            </>
+          )}
+        </div>
       )}
-    </div>
+    </>
   )
 }
 
 // ─── SAÉ Card (Preuve 1 — Développer) ────────────────────────────────────────
 function SaeCard() {
+  // ТЫ МОЖЕШЬ ДОБАВИТЬ СЮДА СКОЛЬКО УГОДНО ФОТОГРАФИЙ, ХОТЬ 50 ШТУК!
   const saeImages: GalleryImage[] = [
-    { src: '/medias/sae-photo1.jpg', caption: 'Page d\'accueil — liste des mini-jeux' },
-    { src: '/medias/sae-photo2.jpg', caption: 'Interface en jeu — exemple Snake' },
-    { src: '/medias/sae-docker.jpg', caption: 'Architecture Docker Compose (dev vs prod)' },
+    { src: '/medias/sae501/sae1.png', caption: 'Accueil — Sélection des mini-jeux' },
+    { src: '/medias/sae501/sae2.png', caption: 'Gameplay du Sudoku' },
+    { src: '/medias/sae501/sae3.png', caption: 'Classement' },
+    { src: '/medias/sae501/sae4.png', caption: 'Gameplay du Mots Méles' },
   ]
 
   const acList: { code: string; label: string; mastery: MasteryLevel }[] = [
     { code: 'AC34.01', label: 'Framework client (React / Next.js)',      mastery: 'Maîtrise avancée'       },
-    { code: 'AC34.02', label: 'Framework serveur (Laravel API REST)',    mastery: 'Maîtrisé'               },
-    { code: 'AC34.03', label: 'Dispositif interactif sophistiqué',       mastery: 'Maîtrisé'               },
-    { code: 'AC34.04', label: 'Composants logiciels réutilisables',      mastery: "En cours d'acquisition" },
-    { code: 'AC35.02', label: 'Qualité & bonnes pratiques Web',          mastery: 'Maîtrisé'               },
+    { code: 'AC34.02', label: 'Framework serveur (Laravel)',             mastery: 'Maîtrisé'               },
+    { code: 'AC34.03', label: 'Développement de jeux interactifs',       mastery: 'Maîtrisé'               },
+    { code: 'AC34.04', label: 'Création de composants réutilisables',    mastery: "En cours d'acquisition" },
   ]
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-
-      {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px' }}>
         <div>
-          <HoloLabel color={EMERALD}>Élément de preuve 01 — Compétence Développer × SAÉ</HoloLabel>
-          <h2 style={{
-            fontFamily: DISPLAY, fontSize: '24px', fontWeight: 700,
-            letterSpacing: '-0.02em', color: '#ffffff', margin: '0 0 8px 0',
-          }}>
-            Plateforme de mini-jeux &amp; Architecture Docker
+          <HoloLabel color={EMERALD}>Projet 01 — Compétence Développer</HoloLabel>
+          <h2 style={{ fontFamily: DISPLAY, fontSize: '24px', fontWeight: 700, letterSpacing: '-0.02em', color: '#ffffff', margin: '0 0 8px 0' }}>
+            Plateforme de mini-jeux &amp; Infra Docker (SAÉ 5.01)
           </h2>
           <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-            {['Docker', 'Next.js', 'Laravel API', 'TailwindCSS'].map(t => (
-              <TechBadge key={t} name={t} />
-            ))}
+            {['Docker', 'Next.js', 'Laravel', 'Tailwind'].map(t => <TechBadge key={t} name={t} />)}
           </div>
         </div>
       </div>
 
-      {/* Body: STAR + Gallery */}
       <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '28px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          <HoloField label="S — Situation" accent={EMERALD}>
-            En 3ème année, nous devions concevoir une plateforme web regroupant plusieurs mini-jeux en équipe de 5.
-            Le vrai défi n'était pas technique — c'était d'éviter le chaos classique quand tout le monde touche au même code
-            et que ça marche sur un poste mais pas sur l'autre.
+          <HoloField label="Contexte de départ" accent={EMERALD}>
+            En 3ème année, on devait créer un site de mini-jeux à 5. Le plus gros risque avec une équipe aussi grande, 
+            c'était le fameux "ça marche chez moi mais pas chez toi". Il fallait absolument éviter le chaos sur Git et les problèmes d'environnement.
           </HoloField>
 
-          <HoloField label="T — Tâche attendue" accent={EMERALD}>
-            Livrer une application fonctionnelle, dockerisée, avec au moins 3 jeux jouables et une API Laravel pour les scores.
-            Ma responsabilité : la mise en place de l'infra Docker <em>et</em> le développement front-end des jeux.
+          <HoloField label="Ce que j'ai fait" accent={EMERALD}>
+            J'ai pris le lead sur l'architecture. J'ai monté tout un environnement <strong>Docker</strong> (Next.js, Laravel, MySQL) pour que tout le groupe ait exactement la même base de travail. 
+            Une fois ça stabilisé, je suis passé sur le code pur : j'ai développé la logique front-end du Snake, du Morpion et du Mémory.
           </HoloField>
 
-          <HoloField label="A — Actions" accent={EMERALD}>
-            J'ai commencé par construire le <code style={{ background: 'rgba(255,255,255,0.08)', padding: '1px 5px', borderRadius: '3px' }}>docker-compose.yml</code> qui orchestre
-            le front Next.js, l'API Laravel et la base MySQL — zéro friction d'environnement pour l'équipe.
-            Ensuite j'ai basculé côté front pour coder la logique complète de Snake, Morpion et Mémory,
-            avec la gestion des scores envoyés à l'API en temps réel.
-          </HoloField>
-
-          <HoloField label="R — Résultats &amp; recul" accent={EMERALD}>
-            Projet livré, fonctionnel, validé par le jury.
-            <span style={{
-              display: 'block', marginTop: '8px', paddingLeft: '10px',
-              borderLeft: `2px solid ${EMERALD}55`,
-              color: '#a3e4b5', fontSize: '13px', fontStyle: 'italic', lineHeight: 1.6,
-            }}>
-              Ce que j'aurais fait différemment : on a utilisé Next.js pour toute la logique serveur
-              par manque de temps pour monter en compétence sur Laravel. Ça fonctionnait, mais c'est
-              un compromis dicté par les contraintes du groupe — pas un vrai choix d'architecture.
-              Si c'était à refaire, j'aurais mis une session de pair-programming sur Laravel dès le début.
+          <HoloField label="Bilan et recul" accent={EMERALD}>
+            Le projet est jouable et l'équipe a pu bosser sans friction. 
+            <span style={{ display: 'block', marginTop: '8px', paddingLeft: '10px', borderLeft: `2px solid ${EMERALD}55`, color: '#a3e4b5', fontSize: '13px', fontStyle: 'italic', lineHeight: 1.6 }}>
+              Avec le recul, on a mis trop de logique serveur directement dans Next.js. On l'a fait parce que l'équipe bloquait sur Laravel, donc c'était un compromis pour avancer. Si c'était à refaire, j'imposerais du pair-programming sur Laravel dès le début au lieu de choisir la facilité.
             </span>
           </HoloField>
         </div>
 
-        {/* Gallery */}
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
-          <HoloGallery images={saeImages} accent={EMERALD} label="Captures du projet" />
+          <HoloGallery images={saeImages} accent={EMERALD} label="Aperçu du projet (Cliquez pour zoomer)" />
         </div>
       </div>
 
       <HoloDivider />
 
-      {/* AC Table with mastery self-assessment */}
       <div>
-        <p style={{
-          fontFamily: MONO, fontSize: '10px', letterSpacing: '0.22em',
-          textTransform: 'uppercase', color: EMERALD, marginBottom: '10px', fontWeight: 600,
-        }}>
-          Auto-évaluation par apprentissage critique
+        <p style={{ fontFamily: MONO, fontSize: '10px', letterSpacing: '0.22em', textTransform: 'uppercase', color: EMERALD, marginBottom: '10px', fontWeight: 600 }}>
+          Mon auto-évaluation sur les compétences (AC)
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
           {acList.map(({ code, label, mastery }) => (
-            <div key={code} style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              gap: '12px', padding: '6px 10px',
-              background: 'rgba(255,255,255,0.03)', borderRadius: '6px',
-              border: '1px solid rgba(255,255,255,0.06)',
-            }}>
+            <div key={code} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', padding: '6px 10px', background: 'rgba(255,255,255,0.03)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.06)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
                 <HoloTag code={code} accent={EMERALD} />
-                <span style={{ fontFamily: MONO, fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>
-                  {label}
-                </span>
+                <span style={{ fontFamily: MONO, fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>{label}</span>
               </div>
               <MasteryBadge level={mastery} />
             </div>
           ))}
         </div>
-        <p style={{
-          fontFamily: MONO, fontSize: '10px', color: 'rgba(255,255,255,0.3)',
-          marginTop: '8px', fontStyle: 'italic',
-        }}>
-          AC34.04 en cours : les composants sont réutilisables en interne au projet,
-          mais pas encore publiés / documentés comme une vraie librairie. Objectif pour le prochain projet.
-        </p>
       </div>
 
       <HoloDivider />
-
-      {/* Footer */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '10px' }}>
-        <a
-          href="https://github.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            background: EMERALD, color: '#000000', fontFamily: MONO,
-            fontSize: '11px', fontWeight: 700, padding: '9px 18px',
-            borderRadius: '6px', textDecoration: 'none', letterSpacing: '0.05em',
-          }}
-        >
-          CODE SOURCE →
-        </a>
-      </div>
     </div>
   )
 }
 
 // ─── Stage Card (Preuve 2 — Entreprendre) ─────────────────────────────────────
 function StageCard() {
+  // ТЫ МОЖЕШЬ ДОБАВИТЬ СЮДА СКОЛЬКО УГОДНО ФОТОГРАФИЙ!
   const horsDoeuvreImages: GalleryImage[] = [
-    { src: '/medias/horsdoeuvre-avant.jpg', caption: 'Avant — plugins obsolètes, erreurs PHP visibles' },
-    { src: '/medias/horsdoeuvre-apres.jpg', caption: 'Après — maintenance corrective appliquée' },
+    { src: '/medias/horsdoeuvre/old/avant1.png', caption: 'Hors d\'œuvre (Avant)' },
+    { src: '/medias/horsdoeuvre/old/avant2.png', caption: 'Hors d\'œuvre (Avant) : Plugins cassés' },
+    { src: '/medias/horsdoeuvre/old/avant3.png', caption: 'Hors d\'œuvre (Avant)' },
+    { src: '/medias/horsdoeuvre/old/avant4.png', caption: 'Hors d\'œuvre (Avant) : Pas de optimisation' },
+    { src: '/medias/horsdoeuvre/old/avant5.png', caption: 'Hors d\'œuvre (Avant) : Navigation propre' },
+    { src: '/medias/horsdoeuvre/new/apres1.png', caption: 'Hors d\'œuvre (Après) : Navigation propre' },
+    { src: '/medias/horsdoeuvre/new/apres2.png', caption: 'Hors d\'œuvre (Après) : Navigation propre' },
+    { src: '/medias/horsdoeuvre/new/apres3.png', caption: 'Hors d\'œuvre (Après) : Navigation propre' },
+    { src: '/medias/horsdoeuvre/new/apres4.png', caption: 'Hors d\'œuvre (Après) : Navigation propre' },
+    
   ]
   const galerieImages: GalleryImage[] = [
-    { src: '/medias/galerie-avant.jpg',  caption: 'Avant — WordPress, 8s de chargement' },
-    { src: '/medias/galerie-apres.jpg',  caption: 'Après — Next.js, < 1s au premier octet' },
-    { src: '/medias/galerie-admin.jpg',  caption: 'Admin sur-mesure livré avec le site' },
+    { src: '/medias/interface/old/galerie-avant1.png',  caption: 'Le site Interface (Avant) : Ancien WordPress lent' },
+    { src: '/medias/interface/old/galerie-avant2.png',  caption: 'Le site Interface (Avant) : Ancien WordPress lent' },
+    { src: '/medias/interface/old/galerie-avant3.png',  caption: 'Le site Interface (Avant) : Ancien WordPress lent' },
+    { src: '/medias/interface/old/galerie-avant4.png',  caption: 'Le site Interface (Avant) : Ancien WordPress lent' },
+    { src: '/medias/interface/old/galerie-avant5.png',  caption: 'Le site Interface (Avant) : Ancien WordPress lent' },
+    { src: '/medias/interface/new/galerie-apres2.png',  caption: 'Le site Interface (Après) : Navigation fluide' },
+    { src: '/medias/interface/new/galerie-apres3.png',  caption: 'Le site Interface (Après) : Navigation fluide' },
+    { src: '/medias/interface/new/galerie-apres4.png',  caption: 'Le site Interface (Après) : Navigation fluide' },
+    { src: '/medias/interface/new/galerie-apres5.png',  caption: 'Le site Interface (Après) : Navigation fluide' },
+    { src: '/medias/interface/new/galerie-apres6.png',  caption: 'Le site Interface (Après) : Espace d\'administration' },
+    { src: '/medias/interface/new/galerie-apres7.png',  caption: 'Le site Interface (Après) : Espace d\'administration' },
   ]
 
   const acList: { code: string; label: string; mastery: MasteryLevel }[] = [
-    { code: 'AC34.05', label: 'Hébergement & déploiement',              mastery: 'Maîtrise avancée' },
-    { code: 'AC35.01', label: 'Pilotage d\'un produit / d\'une équipe', mastery: 'Maîtrisé'         },
-    { code: 'AC35.03', label: 'Projet d\'entreprise — identité marque', mastery: 'Maîtrisé'         },
-    { code: 'AC35.04', label: 'Défense convaincante du projet',         mastery: 'Maîtrisé'         },
+    { code: 'AC34.05', label: 'Gestion des serveurs & déploiement',     mastery: 'Maîtrise avancée' },
+    { code: 'AC35.01', label: 'Gérer un projet de bout en bout',        mastery: 'Maîtrisé'         },
+    { code: 'AC35.04', label: 'Argumenter et défendre ses choix',       mastery: 'Maîtrisé'         },
   ]
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
-      {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px' }}>
         <div>
-          <HoloLabel color={SKY}>Élément de preuve 02 — Compétence Entreprendre × Stage</HoloLabel>
-          <h2 style={{
-            fontFamily: DISPLAY, fontSize: '24px', fontWeight: 700,
-            letterSpacing: '-0.02em', color: '#ffffff', margin: '0 0 8px 0',
-          }}>
-            Stage — Maintenance &amp; refonte de deux sites en production
+          <HoloLabel color={SKY}>Projet 02 — Compétence Entreprendre</HoloLabel>
+          <h2 style={{ fontFamily: DISPLAY, fontSize: '24px', fontWeight: 700, letterSpacing: '-0.02em', color: '#ffffff', margin: '0 0 8px 0' }}>
+            Stage — Refonte, Déploiement &amp; Gestion de Client
           </h2>
           <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-            {['Next.js', 'WordPress', 'Infomaniak', 'OVH'].map(t => (
-              <TechBadge key={t} name={t} />
-            ))}
+            {['Next.js', 'WordPress', 'Infomaniak', 'OVH'].map(t => <TechBadge key={t} name={t} />)}
           </div>
         </div>
       </div>
 
-      {/* Body */}
       <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: '28px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          <HoloField label="S — Situation" accent={SKY}>
-            Deux sites clients bien différents : <strong>Hors d'œuvre</strong>, un site événementiel sous WordPress
-            avec des plugins abandonnés et des erreurs PHP qui remontaient en prod,
-            et <strong>la Galerie</strong>, un site vitrine qui mettait 8 secondes à charger la homepage.
+          <HoloField label="Le challenge" accent={SKY}>
+            On m'a confié deux sites diamétralement opposés. D'un côté, <strong>Hors d'œuvre</strong> : un vieux WordPress qui plantait sans arrêt à cause de plugins abandonnés. De l'autre, <strong>La Galerie</strong> : un site vitrine qui mettait parfois 8 secondes à s'afficher.
           </HoloField>
 
-          <HoloField label="T — Tâche attendue" accent={SKY}>
-            Stabiliser Hors d'œuvre sans tout casser, et proposer une solution durable pour la Galerie.
-            Le tout en autonomie, avec un seul référent disponible deux heures par semaine.
+          <HoloField label="Mes choix et actions" accent={SKY}>
+            Sur le premier site, j'ai mis les mains dans le cambouis pour debug le PHP en direct et nettoyer le serveur. 
+            <br/><br/>
+            Pour <strong>l'Interface</strong>, j'ai pris un risque : j'ai pitché à mon boss une refonte totale sous <strong>Next.js</strong>. Ils avaient peur de perdre leurs articles, alors j'ai codé des scripts de migration automatisés. Et pour qu'ils ne soient pas perdus sans WordPress, je leur ai créé un back-office sur-mesure ultra simple.
           </HoloField>
 
-          <HoloField label="A — Actions" accent={SKY}>
-            Pour <strong>Hors d'œuvre</strong> : j'ai audité les plugins, corrigé directement les erreurs PHP
-            via SSH et mis en place un workflow de mise à jour progressive pour éviter les régressions.
-            <br /><br />
-            Pour <strong>la Galerie</strong> : j'ai présenté à la direction un diagnostic comparatif WordPress vs Next.js.
-            Pour lever leurs réticences sur la migration des archives, j'ai écrit des scripts d'export automatisés,
-            puis conçu une interface d'administration volontairement minimaliste — adaptée à quelqu'un qui n'est pas développeur.
-          </HoloField>
-
-          <HoloField label="R — Résultats &amp; recul" accent={SKY}>
-            Hors d'œuvre stabilisé. Galerie migrée, temps de chargement divisé par 8, client satisfait.
-            <span style={{
-              display: 'block', marginTop: '8px', paddingLeft: '10px',
-              borderLeft: `2px solid ${SKY}55`,
-              color: '#a3d4ea', fontSize: '13px', fontStyle: 'italic', lineHeight: 1.6,
-            }}>
-              Le vrai apprentissage : Infomaniak ne permet pas de compiler Next.js côté serveur.
-              J'ai dû revoir toute la chaîne de déploiement — build local, upload des fichiers statiques,
-              config Nginx manuelle. Frustrant sur le moment, mais ça m'a obligé à comprendre
-              ce qui se passe réellement derrière un simple <code style={{ background: 'rgba(255,255,255,0.08)', padding: '1px 5px', borderRadius: '3px' }}>npm run build</code>.
+          <HoloField label="Bilan et recul" accent={SKY}>
+            Le vieux site tient la route, et le nouveau charge en moins d'une seconde. 
+            <span style={{ display: 'block', marginTop: '8px', paddingLeft: '10px', borderLeft: `2px solid ${SKY}55`, color: '#a3d4ea', fontSize: '13px', fontStyle: 'italic', lineHeight: 1.6 }}>
+              Ma plus grosse galère ? Découvrir que l'hébergeur (Infomaniak) bloquait la compilation Next.js côté serveur. J'ai dû apprendre à tout compiler sur mon propre PC et configurer l'upload manuellement. C'était stressant, mais c'est honnêtement là que j'ai le plus appris sur le déploiement.
             </span>
           </HoloField>
         </div>
 
-        {/* Galleries */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', justifyContent: 'flex-start' }}>
-          <HoloGallery images={horsDoeuvreImages} accent={SKY} label="Hors d'œuvre (WordPress)" />
-          <HoloGallery images={galerieImages} accent={SKY} label="La Galerie (Next.js)" />
+          <HoloGallery images={horsDoeuvreImages} accent={SKY} label="Site 1 : Hors d'œuvre (Cliquez pour zoomer)" />
+          <HoloGallery images={galerieImages} accent={SKY} label="Site 2 : Interface (Cliquez pour zoomer)" />
         </div>
       </div>
 
       <HoloDivider />
 
-      {/* AC Table */}
       <div>
-        <p style={{
-          fontFamily: MONO, fontSize: '10px', letterSpacing: '0.22em',
-          textTransform: 'uppercase', color: SKY, marginBottom: '10px', fontWeight: 600,
-        }}>
-          Auto-évaluation par apprentissage critique
+        <p style={{ fontFamily: MONO, fontSize: '10px', letterSpacing: '0.22em', textTransform: 'uppercase', color: SKY, marginBottom: '10px', fontWeight: 600 }}>
+          Mon auto-évaluation sur les compétences (AC)
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
           {acList.map(({ code, label, mastery }) => (
-            <div key={code} style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              gap: '12px', padding: '6px 10px',
-              background: 'rgba(255,255,255,0.03)', borderRadius: '6px',
-              border: '1px solid rgba(255,255,255,0.06)',
-            }}>
+            <div key={code} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', padding: '6px 10px', background: 'rgba(255,255,255,0.03)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.06)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
                 <HoloTag code={code} accent={SKY} />
-                <span style={{ fontFamily: MONO, fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>
-                  {label}
-                </span>
+                <span style={{ fontFamily: MONO, fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>{label}</span>
               </div>
               <MasteryBadge level={mastery} />
             </div>
@@ -543,32 +456,12 @@ function StageCard() {
 
       <HoloDivider />
 
-      {/* Footer */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '10px' }}>
-        <a
-          href="https://votre-site-hors-doeuvre.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            background: 'rgba(56,189,248,0.1)', border: `1px solid ${SKY}55`,
-            color: SKY, fontFamily: MONO, fontSize: '10px',
-            fontWeight: 600, padding: '8px 14px', borderRadius: '6px',
-            textDecoration: 'none', letterSpacing: '0.05em',
-          }}
-        >
-          HORS D'ŒUVRE ↗
+        <a href="https://www.interface-horsdoeuvre.com/new-accueil/" target="_blank" rel="noopener noreferrer" style={{ background: 'rgba(56,189,248,0.1)', border: `1px solid ${SKY}55`, color: SKY, fontFamily: MONO, fontSize: '10px', fontWeight: 600, padding: '8px 14px', borderRadius: '6px', textDecoration: 'none' }}>
+          VOIR LE SITE "HORS D'ŒUVRE" ↗
         </a>
-        <a
-          href="https://votre-site-galerie.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            background: SKY, color: '#000000', fontFamily: MONO,
-            fontSize: '10px', fontWeight: 700, padding: '8px 14px',
-            borderRadius: '6px', textDecoration: 'none', letterSpacing: '0.05em',
-          }}
-        >
-          LA GALERIE ↗
+        <a href="https://ivandev.nppln.fr" target="_blank" rel="noopener noreferrer" style={{ background: SKY, color: '#000000', fontFamily: MONO, fontSize: '10px', fontWeight: 700, padding: '8px 14px', borderRadius: '6px', textDecoration: 'none' }}>
+          VOIR LE SITE "Interface" ↗
         </a>
       </div>
     </div>
@@ -576,13 +469,7 @@ function StageCard() {
 }
 
 // ─── Cell ─────────────────────────────────────────────────────────────────────
-interface CellProps {
-  col: number
-  row: number
-  accentColor: string
-  outroStart: number
-  projectCard?: 'sae' | 'stage'
-}
+interface CellProps { col: number; row: number; accentColor: string; outroStart: number; projectCard?: 'sae' | 'stage' }
 
 function Cell({ col, row, accentColor, outroStart, projectCard }: CellProps) {
   const innerRef = useRef<THREE.Mesh>(null)
@@ -591,10 +478,7 @@ function Cell({ col, row, accentColor, outroStart, projectCard }: CellProps) {
   const [cardOpacity, setCardOpacity] = useState(0)
   const lastEmitted = useRef(0)
   const [wx, wy, wz] = cellPos(col, row)
-  const edgesGeo = useMemo(
-    () => new THREE.EdgesGeometry(new THREE.BoxGeometry(CELL_W, CELL_H, 0.02)),
-    []
-  )
+  const edgesGeo = useMemo(() => new THREE.EdgesGeometry(new THREE.BoxGeometry(CELL_W, CELL_H, 0.02)), [])
   const activation = useRef(0)
 
   useFrame(() => {
@@ -626,21 +510,9 @@ function Cell({ col, row, accentColor, outroStart, projectCard }: CellProps) {
     activation.current += (targetAlpha - activation.current) * 0.095
     const zOffset = activation.current * 0.45
 
-    if (innerRef.current) {
-      innerRef.current.position.z = zOffset
-      ;(innerRef.current.material as THREE.MeshStandardMaterial).opacity =
-        0.04 + activation.current * 0.16
-    }
-    if (frameRef.current) {
-      frameRef.current.position.z = zOffset
-      ;(frameRef.current.material as THREE.LineBasicMaterial).opacity =
-        0.22 + activation.current * 0.78
-    }
-    if (glowRef.current) {
-      glowRef.current.position.z = zOffset - 0.04
-      ;(glowRef.current.material as THREE.MeshStandardMaterial).opacity =
-        activation.current * 0.14
-    }
+    if (innerRef.current) { innerRef.current.position.z = zOffset; (innerRef.current.material as THREE.MeshStandardMaterial).opacity = 0.04 + activation.current * 0.16 }
+    if (frameRef.current) { frameRef.current.position.z = zOffset; (frameRef.current.material as THREE.LineBasicMaterial).opacity = 0.22 + activation.current * 0.78 }
+    if (glowRef.current) { glowRef.current.position.z = zOffset - 0.04; (glowRef.current.material as THREE.MeshStandardMaterial).opacity = activation.current * 0.14 }
 
     if (projectCard) {
       if (Math.abs(exactOpacity - lastEmitted.current) >= 0.01) {
@@ -652,62 +524,13 @@ function Cell({ col, row, accentColor, outroStart, projectCard }: CellProps) {
 
   return (
     <group position={[wx, wy, wz]}>
-      <mesh ref={innerRef}>
-        <planeGeometry args={[CELL_W - 0.06, CELL_H - 0.06]} />
-        <meshStandardMaterial
-          color="#b0d0ff"
-          transparent
-          opacity={0.04}
-          roughness={0.05}
-          metalness={0.4}
-          side={THREE.DoubleSide}
-          depthWrite={false}
-          toneMapped={false}
-        />
-      </mesh>
-
-      <lineSegments ref={frameRef} geometry={edgesGeo}>
-        <lineBasicMaterial color={accentColor} transparent opacity={0.22} toneMapped={false} />
-      </lineSegments>
-
-      <mesh ref={glowRef} position={[0, 0, -0.04]}>
-        <planeGeometry args={[CELL_W + 0.4, CELL_H + 0.4]} />
-        <meshStandardMaterial
-          color={accentColor}
-          emissive={accentColor}
-          emissiveIntensity={1.5}
-          transparent
-          opacity={0}
-          depthWrite={false}
-          toneMapped={false}
-        />
-      </mesh>
+      <mesh ref={innerRef}><planeGeometry args={[CELL_W - 0.06, CELL_H - 0.06]} /><meshStandardMaterial color="#b0d0ff" transparent opacity={0.04} roughness={0.05} metalness={0.4} side={THREE.DoubleSide} depthWrite={false} toneMapped={false} /></mesh>
+      <lineSegments ref={frameRef} geometry={edgesGeo}><lineBasicMaterial color={accentColor} transparent opacity={0.22} toneMapped={false} /></lineSegments>
+      <mesh ref={glowRef} position={[0, 0, -0.04]}><planeGeometry args={[CELL_W + 0.4, CELL_H + 0.4]} /><meshStandardMaterial color={accentColor} emissive={accentColor} emissiveIntensity={1.5} transparent opacity={0} depthWrite={false} toneMapped={false} /></mesh>
 
       {projectCard && cardOpacity > 0.01 && (
-        <Html
-          center
-          style={{
-            opacity: cardOpacity,
-            transition: 'opacity 0.1s linear',
-            pointerEvents: cardOpacity < 0.1 ? 'none' : 'auto',
-            width: 'min(1020px, 92vw)',
-            fontFamily: DISPLAY,
-          }}
-        >
-          <div
-            style={{
-              background: 'rgba(4, 5, 10, 0.98)',
-              border: `1px solid ${accentColor}44`,
-              borderLeft: `5px solid ${accentColor}`,
-              borderRadius: '16px',
-              padding: '22px 30px',
-              boxShadow: '0 32px 64px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.04)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              maxHeight: '85vh',
-              overflowY: 'auto',
-            }}
-          >
+        <Html center style={{ opacity: cardOpacity, transition: 'opacity 0.1s linear', pointerEvents: cardOpacity < 0.1 ? 'none' : 'auto', width: 'min(1020px, 92vw)', fontFamily: DISPLAY }}>
+          <div style={{ background: 'rgba(4, 5, 10, 0.98)', border: `1px solid ${accentColor}44`, borderLeft: `5px solid ${accentColor}`, borderRadius: '16px', padding: '22px 30px', boxShadow: '0 32px 64px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.04)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', maxHeight: '85vh', overflowY: 'auto' }}>
             {projectCard === 'sae'   && <SaeCard   />}
             {projectCard === 'stage' && <StageCard />}
           </div>
@@ -721,107 +544,44 @@ function Cell({ col, row, accentColor, outroStart, projectCard }: CellProps) {
 function MatrixLabels() {
   const colLabels = ['SAÉ 5.01', 'STAGE MMI', 'SAÉ PROJET', 'MATRICE']
   const rowLabels = ['TRANSVERSE', 'ENTREPRENDRE', 'DÉVELOPPER']
-
   return (
     <group>
       {colLabels.map((text, i) => {
-        const x = OFFSET_X + i * STEP_X
-        const y = OFFSET_Y + (ROWS - 1) * STEP_Y + CELL_H * 0.5 + 0.45
-        return (
-          <Text
-            key={`col-${i}`}
-            position={[x, y, 0]}
-            fontSize={0.24}
-            color={i === 0 ? EMERALD : i === 1 ? SKY : '#64748b'}
-            anchorX="center"
-            anchorY="bottom"
-            letterSpacing={0.05}
-          >
-            {text}
-          </Text>
-        )
+        const x = OFFSET_X + i * STEP_X; const y = OFFSET_Y + (ROWS - 1) * STEP_Y + CELL_H * 0.5 + 0.45
+        return <Text key={`col-${i}`} position={[x, y, 0]} fontSize={0.24} color={i === 0 ? EMERALD : i === 1 ? SKY : '#64748b'} anchorX="center" anchorY="bottom" letterSpacing={0.05}>{text}</Text>
       })}
       {rowLabels.map((text, i) => {
-        const x = OFFSET_X - CELL_W * 0.5 - 0.45
-        const y = OFFSET_Y + i * STEP_Y
-        return (
-          <Text
-            key={`row-${i}`}
-            position={[x, y, 0]}
-            fontSize={0.22}
-            color={i === 2 ? EMERALD : i === 1 ? SKY : '#64748b'}
-            anchorX="right"
-            anchorY="middle"
-            letterSpacing={0.08}
-          >
-            {text}
-          </Text>
-        )
+        const x = OFFSET_X - CELL_W * 0.5 - 0.45; const y = OFFSET_Y + i * STEP_Y
+        return <Text key={`row-${i}`} position={[x, y, 0]} fontSize={0.22} color={i === 2 ? EMERALD : i === 1 ? SKY : '#64748b'} anchorX="right" anchorY="middle" letterSpacing={0.08}>{text}</Text>
       })}
     </group>
   )
 }
 
 function AxisRules() {
-  const hGeo = useMemo(
-    () =>
-      new THREE.BufferGeometry().setFromPoints([
-        new THREE.Vector3(OFFSET_X - STEP_X * 0.4, OFFSET_Y - STEP_Y * 0.55, 0),
-        new THREE.Vector3(OFFSET_X + (COLS - 1) * STEP_X + STEP_X * 0.4, OFFSET_Y - STEP_Y * 0.55, 0),
-      ]),
-    []
-  )
-  const vGeo = useMemo(
-    () =>
-      new THREE.BufferGeometry().setFromPoints([
-        new THREE.Vector3(OFFSET_X - STEP_X * 0.5, OFFSET_Y - STEP_Y * 0.5, 0),
-        new THREE.Vector3(OFFSET_X - STEP_X * 0.5, OFFSET_Y + (ROWS - 1) * STEP_Y + STEP_Y * 0.4, 0),
-      ]),
-    []
-  )
+  const hGeo = useMemo(() => new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(OFFSET_X - STEP_X * 0.4, OFFSET_Y - STEP_Y * 0.55, 0), new THREE.Vector3(OFFSET_X + (COLS - 1) * STEP_X + STEP_X * 0.4, OFFSET_Y - STEP_Y * 0.55, 0)]), [])
+  const vGeo = useMemo(() => new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(OFFSET_X - STEP_X * 0.5, OFFSET_Y - STEP_Y * 0.5, 0), new THREE.Vector3(OFFSET_X - STEP_X * 0.5, OFFSET_Y + (ROWS - 1) * STEP_Y + STEP_Y * 0.4, 0)]), [])
   return (
     <group>
-      <line geometry={hGeo}>
-        <lineBasicMaterial color="#334155" transparent opacity={0.4} />
-      </line>
-      <line geometry={vGeo}>
-        <lineBasicMaterial color="#334155" transparent opacity={0.4} />
-      </line>
+      <line geometry={hGeo}><lineBasicMaterial color="#334155" transparent opacity={0.4} /></line>
+      <line geometry={vGeo}><lineBasicMaterial color="#334155" transparent opacity={0.4} /></line>
     </group>
   )
 }
 
 function GroundGrid() {
-  return (
-    <gridHelper
-      args={[40, 40, '#161e29', '#161e29']}
-      position={[0, OFFSET_Y - STEP_Y * 0.8, -1]}
-      rotation={[Math.PI / 2, 0, 0]}
-    />
-  )
+  return <gridHelper args={[40, 40, '#161e29', '#161e29']} position={[0, OFFSET_Y - STEP_Y * 0.8, -1]} rotation={[Math.PI / 2, 0, 0]} />
 }
 
-// ─── CompetencyMatrix ─────────────────────────────────────────────────────────
 export function CompetencyMatrix() {
   const groupRef = useRef<THREE.Group>(null)
   const time     = useRef(0)
-
   useFrame((_, delta) => {
     time.current += delta
-    if (groupRef.current) {
-      groupRef.current.rotation.x = Math.sin(time.current * 0.15) * 0.012
-      groupRef.current.rotation.y = Math.sin(time.current * 0.10) * 0.015
-    }
+    if (groupRef.current) { groupRef.current.rotation.x = Math.sin(time.current * 0.15) * 0.012; groupRef.current.rotation.y = Math.sin(time.current * 0.10) * 0.015 }
   })
-
   const cells = useMemo(() => {
-    const items: {
-      col: number
-      row: number
-      accentColor: string
-      projectCard?: 'sae' | 'stage'
-    }[] = []
-
+    const items: { col: number; row: number; accentColor: string; projectCard?: 'sae' | 'stage' }[] = []
     for (let row = 0; row < ROWS; row++) {
       for (let col = 0; col < COLS; col++) {
         const spec = ACTIVATIONS.find(a => a.col === col && a.row === row)
@@ -833,21 +593,13 @@ export function CompetencyMatrix() {
     }
     return items
   }, [])
-
   return (
     <group ref={groupRef}>
       <GroundGrid />
       <AxisRules />
       <MatrixLabels />
       {cells.map(({ col, row, accentColor, projectCard }) => (
-        <Cell
-          key={`${col}-${row}`}
-          col={col}
-          row={row}
-          accentColor={accentColor}
-          outroStart={OUTRO_START}
-          projectCard={projectCard}
-        />
+        <Cell key={`${col}-${row}`} col={col} row={row} accentColor={accentColor} outroStart={OUTRO_START} projectCard={projectCard} />
       ))}
     </group>
   )
