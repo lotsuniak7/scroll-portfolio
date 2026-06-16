@@ -563,8 +563,8 @@ function AxisRules() {
   const vGeo = useMemo(() => new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(OFFSET_X - STEP_X * 0.5, OFFSET_Y - STEP_Y * 0.5, 0), new THREE.Vector3(OFFSET_X - STEP_X * 0.5, OFFSET_Y + (ROWS - 1) * STEP_Y + STEP_Y * 0.4, 0)]), [])
   return (
     <group>
-      <line geometry={hGeo}><lineBasicMaterial color="#334155" transparent opacity={0.4} /></line>
-      <line geometry={vGeo}><lineBasicMaterial color="#334155" transparent opacity={0.4} /></line>
+      <lineSegments geometry={hGeo}><lineBasicMaterial color="#334155" transparent opacity={0.4} /></lineSegments>
+      <lineSegments geometry={vGeo}><lineBasicMaterial color="#334155" transparent opacity={0.4} /></lineSegments>
     </group>
   )
 }
