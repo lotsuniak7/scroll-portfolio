@@ -216,7 +216,6 @@ function HoloGallery({ images, accent = EMERALD, label }: HoloGalleryProps) {
               <button onClick={prev} style={{ position: 'absolute', left: '8px', top: '50%', transform: 'translateY(-50%)', zIndex: 10, background: 'rgba(0,0,0,0.65)', border: `1px solid ${accent}44`, borderRadius: '6px', color: '#fff', cursor: 'pointer', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>‹</button>
               <button onClick={next} style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', zIndex: 10, background: 'rgba(0,0,0,0.65)', border: `1px solid ${accent}44`, borderRadius: '6px', color: '#fff', cursor: 'pointer', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>›</button>
               
-              {/* COMPACT COUNTER (1 / 25) - Allows infinite images without breaking UI */}
               <div style={{ position: 'absolute', bottom: '10px', right: '10px', zIndex: 10, background: 'rgba(0,0,0,0.85)', borderRadius: '6px', padding: '4px 10px', border: `1px solid ${accent}44`, display: 'flex', alignItems: 'center' }}>
                 <span style={{ fontFamily: MONO, fontSize: '10px', color: '#ffffff', letterSpacing: '0.1em' }}>
                   {index + 1} / {images.length}
@@ -243,7 +242,6 @@ function HoloGallery({ images, accent = EMERALD, label }: HoloGalleryProps) {
             cursor: 'zoom-out', padding: '40px'
           }}
         >
-          {/* Lightbox Counter */}
           {images.length > 1 && (
             <div style={{ position: 'absolute', top: '30px', left: '40px', fontFamily: MONO, fontSize: '14px', color: '#fff', background: 'rgba(0,0,0,0.5)', padding: '6px 14px', borderRadius: '8px', border: `1px solid ${accent}44` }}>
               {index + 1} / {images.length}
@@ -281,19 +279,18 @@ function HoloGallery({ images, accent = EMERALD, label }: HoloGalleryProps) {
 
 // ─── SAÉ Card (Preuve 1 — Développer) ────────────────────────────────────────
 function SaeCard() {
-  // ТЫ МОЖЕШЬ ДОБАВИТЬ СЮДА СКОЛЬКО УГОДНО ФОТОГРАФИЙ, ХОТЬ 50 ШТУК!
   const saeImages: GalleryImage[] = [
     { src: '/medias/sae501/sae1.png', caption: 'Accueil — Sélection des mini-jeux' },
     { src: '/medias/sae501/sae2.png', caption: 'Gameplay du Sudoku' },
     { src: '/medias/sae501/sae3.png', caption: 'Classement' },
-    { src: '/medias/sae501/sae4.png', caption: 'Gameplay du Mots Méles' },
+    { src: '/medias/sae501/sae4.png', caption: 'Gameplay du Mots Mêlés' },
   ]
 
   const acList: { code: string; label: string; mastery: MasteryLevel }[] = [
-    { code: 'AC34.01', label: 'Framework client (React / Next.js)',      mastery: 'Maîtrise avancée'       },
-    { code: 'AC34.02', label: 'Framework serveur (Laravel)',             mastery: 'Maîtrisé'               },
+    { code: 'AC34.01', label: 'Framework client (React / Next.js)',      mastery: 'Maîtrisé'               },
+    { code: 'AC34.02', label: 'Framework serveur (Laravel)',             mastery: 'En cours d\'acquisition'},
     { code: 'AC34.03', label: 'Développement de jeux interactifs',       mastery: 'Maîtrisé'               },
-    { code: 'AC34.04', label: 'Création de composants réutilisables',    mastery: "En cours d'acquisition" },
+    { code: 'AC34.04', label: 'Création de composants réutilisables',    mastery: 'Maîtrisé'               },
   ]
 
   return (
@@ -302,7 +299,7 @@ function SaeCard() {
         <div>
           <HoloLabel color={EMERALD}>Projet 01 — Compétence Développer</HoloLabel>
           <h2 style={{ fontFamily: DISPLAY, fontSize: '24px', fontWeight: 700, letterSpacing: '-0.02em', color: '#ffffff', margin: '0 0 8px 0' }}>
-            Plateforme de mini-jeux &amp; Infra Docker (SAÉ 5.01)
+            Plateforme de mini-jeux (SAÉ 5.01)
           </h2>
           <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
             {['Docker', 'Next.js', 'Laravel', 'Tailwind'].map(t => <TechBadge key={t} name={t} />)}
@@ -312,20 +309,18 @@ function SaeCard() {
 
       <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '28px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          <HoloField label="Contexte de départ" accent={EMERALD}>
-            En 3ème année, on devait créer un site de mini-jeux à 5. Le plus gros risque avec une équipe aussi grande, 
-            c'était le fameux "ça marche chez moi mais pas chez toi". Il fallait absolument éviter le chaos sur Git et les problèmes d'environnement.
+          <HoloField label="S — Contexte de départ" accent={EMERALD}>
+            Projet de groupe visant à créer un site web regroupant des mini-jeux. Le défi n'était pas seulement de coder, mais de réussir à s'organiser et à choisir les bonnes technologies face aux disparités de niveaux dans l'équipe.
           </HoloField>
 
-          <HoloField label="Ce que j'ai fait" accent={EMERALD}>
-            J'ai pris le lead sur l'architecture. J'ai monté tout un environnement <strong>Docker</strong> (Next.js, Laravel, MySQL) pour que tout le groupe ait exactement la même base de travail. 
-            Une fois ça stabilisé, je suis passé sur le code pur : j'ai développé la logique front-end du Snake, du Morpion et du Mémory.
+          <HoloField label="A — Mes choix et actions" accent={EMERALD}>
+            Après de longues discussions, nous avons réalisé que l'équipe manquait d'expérience sur Laravel. Nous avons donc pris la décision de déporter un maximum de logique sur <strong>Next.js</strong> pour tenir les délais. De mon côté, j'ai d'abord aidé à la configuration de l'environnement <strong>Docker</strong> pour standardiser nos machines. Ensuite, j'ai développé entièrement le jeu "Mots Mêlés" et j'ai pris en charge l'intégration de plusieurs fonctionnalités de design.
           </HoloField>
 
-          <HoloField label="Bilan et recul" accent={EMERALD}>
-            Le projet est jouable et l'équipe a pu bosser sans friction. 
+          <HoloField label="R — Bilan et recul" accent={EMERALD}>
+            Le projet a été livré dans les temps et fonctionnel. 
             <span style={{ display: 'block', marginTop: '8px', paddingLeft: '10px', borderLeft: `2px solid ${EMERALD}55`, color: '#a3e4b5', fontSize: '13px', fontStyle: 'italic', lineHeight: 1.6 }}>
-              Avec le recul, on a mis trop de logique serveur directement dans Next.js. On l'a fait parce que l'équipe bloquait sur Laravel, donc c'était un compromis pour avancer. Si c'était à refaire, j'imposerais du pair-programming sur Laravel dès le début au lieu de choisir la facilité.
+              Posture réflexive : Si le projet est une réussite visuelle et fonctionnelle, j'ai conscience que ma maîtrise reste souvent empirique. Je sais "faire fonctionner" les choses, mais il me manque encore une connaissance profonde des mécaniques internes et de l'architecture pure (notamment sur le back-end). C'est la raison exacte pour laquelle je souhaite poursuivre mes études l'année prochaine.
             </span>
           </HoloField>
         </div>
@@ -355,35 +350,39 @@ function SaeCard() {
       </div>
 
       <HoloDivider />
+
+      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer" style={{ background: EMERALD, color: '#000000', fontFamily: MONO, fontSize: '11px', fontWeight: 700, padding: '9px 18px', borderRadius: '6px', textDecoration: 'none', letterSpacing: '0.05em' }}>
+          VOIR LE CODE SOURCE →
+        </a>
+      </div>
     </div>
   )
 }
 
 // ─── Stage Card (Preuve 2 — Entreprendre) ─────────────────────────────────────
 function StageCard() {
-  // ТЫ МОЖЕШЬ ДОБАВИТЬ СЮДА СКОЛЬКО УГОДНО ФОТОГРАФИЙ!
   const horsDoeuvreImages: GalleryImage[] = [
     { src: '/medias/horsdoeuvre/old/avant1.png', caption: 'Hors d\'œuvre (Avant)' },
     { src: '/medias/horsdoeuvre/old/avant2.png', caption: 'Hors d\'œuvre (Avant) : Plugins cassés' },
     { src: '/medias/horsdoeuvre/old/avant3.png', caption: 'Hors d\'œuvre (Avant)' },
-    { src: '/medias/horsdoeuvre/old/avant4.png', caption: 'Hors d\'œuvre (Avant) : Pas de optimisation' },
-    { src: '/medias/horsdoeuvre/old/avant5.png', caption: 'Hors d\'œuvre (Avant) : Navigation propre' },
-    { src: '/medias/horsdoeuvre/new/apres1.png', caption: 'Hors d\'œuvre (Après) : Navigation propre' },
+    { src: '/medias/horsdoeuvre/old/avant4.png', caption: 'Hors d\'œuvre (Avant) : Pas d\'optimisation' },
+    { src: '/medias/horsdoeuvre/old/avant5.png', caption: 'Hors d\'œuvre (Avant)' },
+    { src: '/medias/horsdoeuvre/new/apres1.png', caption: 'Hors d\'œuvre (Après) : Site stabilisé' },
     { src: '/medias/horsdoeuvre/new/apres2.png', caption: 'Hors d\'œuvre (Après) : Navigation propre' },
-    { src: '/medias/horsdoeuvre/new/apres3.png', caption: 'Hors d\'œuvre (Après) : Navigation propre' },
-    { src: '/medias/horsdoeuvre/new/apres4.png', caption: 'Hors d\'œuvre (Après) : Navigation propre' },
-    
+    { src: '/medias/horsdoeuvre/new/apres3.png', caption: 'Hors d\'œuvre (Après)' },
+    { src: '/medias/horsdoeuvre/new/apres4.png', caption: 'Hors d\'œuvre (Après)' },
   ]
   const galerieImages: GalleryImage[] = [
     { src: '/medias/interface/old/galerie-avant1.png',  caption: 'Le site Interface (Avant) : Ancien WordPress lent' },
-    { src: '/medias/interface/old/galerie-avant2.png',  caption: 'Le site Interface (Avant) : Ancien WordPress lent' },
-    { src: '/medias/interface/old/galerie-avant3.png',  caption: 'Le site Interface (Avant) : Ancien WordPress lent' },
-    { src: '/medias/interface/old/galerie-avant4.png',  caption: 'Le site Interface (Avant) : Ancien WordPress lent' },
-    { src: '/medias/interface/old/galerie-avant5.png',  caption: 'Le site Interface (Avant) : Ancien WordPress lent' },
-    { src: '/medias/interface/new/galerie-apres2.png',  caption: 'Le site Interface (Après) : Navigation fluide' },
+    { src: '/medias/interface/old/galerie-avant2.png',  caption: 'Le site Interface (Avant)' },
+    { src: '/medias/interface/old/galerie-avant3.png',  caption: 'Le site Interface (Avant)' },
+    { src: '/medias/interface/old/galerie-avant4.png',  caption: 'Le site Interface (Avant)' },
+    { src: '/medias/interface/old/galerie-avant5.png',  caption: 'Le site Interface (Avant)' },
+    { src: '/medias/interface/new/galerie-apres2.png',  caption: 'Le site Interface (Après) : Refonte Next.js' },
     { src: '/medias/interface/new/galerie-apres3.png',  caption: 'Le site Interface (Après) : Navigation fluide' },
-    { src: '/medias/interface/new/galerie-apres4.png',  caption: 'Le site Interface (Après) : Navigation fluide' },
-    { src: '/medias/interface/new/galerie-apres5.png',  caption: 'Le site Interface (Après) : Navigation fluide' },
+    { src: '/medias/interface/new/galerie-apres4.png',  caption: 'Le site Interface (Après)' },
+    { src: '/medias/interface/new/galerie-apres5.png',  caption: 'Le site Interface (Après)' },
     { src: '/medias/interface/new/galerie-apres6.png',  caption: 'Le site Interface (Après) : Espace d\'administration' },
     { src: '/medias/interface/new/galerie-apres7.png',  caption: 'Le site Interface (Après) : Espace d\'administration' },
   ]
@@ -411,20 +410,20 @@ function StageCard() {
 
       <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: '28px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          <HoloField label="Le challenge" accent={SKY}>
-            On m'a confié deux sites diamétralement opposés. D'un côté, <strong>Hors d'œuvre</strong> : un vieux WordPress qui plantait sans arrêt à cause de plugins abandonnés. De l'autre, <strong>La Galerie</strong> : un site vitrine qui mettait parfois 8 secondes à s'afficher.
+          <HoloField label="S — Le challenge" accent={SKY}>
+            On m'a confié deux sites diamétralement opposés. D'un côté, <strong>Hors d'œuvre</strong> : un vieux WordPress qui plantait sans arrêt à cause de plugins abandonnés. De l'autre, <strong>Interface</strong> : un site vitrine qui mettait parfois 8 secondes à s'afficher, ruinant l'expérience utilisateur.
           </HoloField>
 
-          <HoloField label="Mes choix et actions" accent={SKY}>
-            Sur le premier site, j'ai mis les mains dans le cambouis pour debug le PHP en direct et nettoyer le serveur. 
+          <HoloField label="A — Mes choix et actions" accent={SKY}>
+            Sur le premier site, j'ai appliqué une maintenance corrective stricte pour nettoyer les erreurs PHP sans casser l'existant. 
             <br/><br/>
-            Pour <strong>l'Interface</strong>, j'ai pris un risque : j'ai pitché à mon boss une refonte totale sous <strong>Next.js</strong>. Ils avaient peur de perdre leurs articles, alors j'ai codé des scripts de migration automatisés. Et pour qu'ils ne soient pas perdus sans WordPress, je leur ai créé un back-office sur-mesure ultra simple.
+            Pour <strong>Interface</strong>, j'ai proposé une stratégie radicale : une refonte totale sous <strong>Next.js</strong>. Pour vaincre la réticence de la direction (qui craignait de perdre ses archives et son autonomie), j'ai codé des scripts de migration automatisés. Pour pallier leur manque de bagage technique, j'ai conçu un back-office sur-mesure ultra-simplifié, leur permettant de gérer le site sans toucher au code.
           </HoloField>
 
-          <HoloField label="Bilan et recul" accent={SKY}>
-            Le vieux site tient la route, et le nouveau charge en moins d'une seconde. 
+          <HoloField label="R — Bilan et recul" accent={SKY}>
+            Le vieux site est stabilisé, et le nouveau charge instantanément.
             <span style={{ display: 'block', marginTop: '8px', paddingLeft: '10px', borderLeft: `2px solid ${SKY}55`, color: '#a3d4ea', fontSize: '13px', fontStyle: 'italic', lineHeight: 1.6 }}>
-              Ma plus grosse galère ? Découvrir que l'hébergeur (Infomaniak) bloquait la compilation Next.js côté serveur. J'ai dû apprendre à tout compiler sur mon propre PC et configurer l'upload manuellement. C'était stressant, mais c'est honnêtement là que j'ai le plus appris sur le déploiement.
+              Le vrai mur technique a été l'hébergement Infomaniak, incapable de compiler Next.js côté serveur. Au lieu de me retrouver bloqué, j'ai adapté mon workflow : build en local sur ma machine et déploiement manuel. C'était frustrant au début, mais cela m'a forcé à comprendre les rouages du déploiement web bien au-delà du simple clic sur Vercel.
             </span>
           </HoloField>
         </div>
@@ -524,9 +523,17 @@ function Cell({ col, row, accentColor, outroStart, projectCard }: CellProps) {
 
   return (
     <group position={[wx, wy, wz]}>
-      <mesh ref={innerRef}><planeGeometry args={[CELL_W - 0.06, CELL_H - 0.06]} /><meshStandardMaterial color="#b0d0ff" transparent opacity={0.04} roughness={0.05} metalness={0.4} side={THREE.DoubleSide} depthWrite={false} toneMapped={false} /></mesh>
-      <lineSegments ref={frameRef} geometry={edgesGeo}><lineBasicMaterial color={accentColor} transparent opacity={0.22} toneMapped={false} /></lineSegments>
-      <mesh ref={glowRef} position={[0, 0, -0.04]}><planeGeometry args={[CELL_W + 0.4, CELL_H + 0.4]} /><meshStandardMaterial color={accentColor} emissive={accentColor} emissiveIntensity={1.5} transparent opacity={0} depthWrite={false} toneMapped={false} /></mesh>
+      <mesh ref={innerRef}>
+        <planeGeometry args={[CELL_W - 0.06, CELL_H - 0.06]} />
+        <meshStandardMaterial color="#b0d0ff" transparent opacity={0.04} roughness={0.05} metalness={0.4} side={THREE.DoubleSide} depthWrite={false} toneMapped={false} />
+      </mesh>
+      <lineSegments ref={frameRef} geometry={edgesGeo}>
+        <lineBasicMaterial color={accentColor} transparent opacity={0.22} toneMapped={false} />
+      </lineSegments>
+      <mesh ref={glowRef} position={[0, 0, -0.04]}>
+        <planeGeometry args={[CELL_W + 0.4, CELL_H + 0.4]} />
+        <meshStandardMaterial color={accentColor} emissive={accentColor} emissiveIntensity={1.5} transparent opacity={0} depthWrite={false} toneMapped={false} />
+      </mesh>
 
       {projectCard && cardOpacity > 0.01 && (
         <Html center style={{ opacity: cardOpacity, transition: 'opacity 0.1s linear', pointerEvents: cardOpacity < 0.1 ? 'none' : 'auto', width: 'min(1020px, 92vw)', fontFamily: DISPLAY }}>
@@ -567,7 +574,6 @@ function AxisRules() {
       <lineSegments geometry={vGeo}><lineBasicMaterial color="#334155" transparent opacity={0.4} /></lineSegments>
     </group>
   )
-  
 }
 
 function GroundGrid() {
