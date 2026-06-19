@@ -556,14 +556,12 @@ function Cell({ col, row, accentColor, outroStart, projectCard }: CellProps) {
   const edgesGeo = useMemo(() => new THREE.EdgesGeometry(new THREE.BoxGeometry(CELL_W, CELL_H, 0.02)), [])
   const activation = useRef(0)
 
-  // ИСПРАВЛЕННАЯ МАТЕМАТИКА СКРОЛЛА (РАСШИРЕННЫЕ ТАЙМИНГИ ДЛЯ 3-Х ПРОЕКТОВ)
   useFrame(() => {
     const p = scrollProxy.progress
     let targetAlpha = 0
     let exactOpacity = 0
 
     if (col === 0 && row === 2) {
-      // Карточка 1 (SAÉ)
       if (p >= 0.08 && p <= 0.38) {
         targetAlpha = p >= 0.12 && p <= 0.34 ? 1 : 0.4
         if (p >= 0.15 && p <= 0.32) exactOpacity = 1
@@ -571,7 +569,6 @@ function Cell({ col, row, accentColor, outroStart, projectCard }: CellProps) {
         else exactOpacity = 1 - THREE.MathUtils.smoothstep(p, 0.32, 0.38)
       }
     } else if (col === 1 && row === 1) {
-      // Карточка 2 (STAGE)
       if (p >= 0.36 && p <= 0.66) {
         targetAlpha = p >= 0.40 && p <= 0.62 ? 1 : 0.4
         if (p >= 0.43 && p <= 0.60) exactOpacity = 1
@@ -579,7 +576,6 @@ function Cell({ col, row, accentColor, outroStart, projectCard }: CellProps) {
         else exactOpacity = 1 - THREE.MathUtils.smoothstep(p, 0.60, 0.66)
       }
     } else if (col === 2 && row === 0) {
-      // Карточка 3 (RESERV) - НОВАЯ
       if (p >= 0.64 && p <= 0.94) {
         targetAlpha = p >= 0.68 && p <= 0.90 ? 1 : 0.4
         if (p >= 0.71 && p <= 0.88) exactOpacity = 1
@@ -614,10 +610,33 @@ function Cell({ col, row, accentColor, outroStart, projectCard }: CellProps) {
       <lineSegments ref={frameRef} geometry={edgesGeo}><lineBasicMaterial color={accentColor} transparent opacity={0.22} toneMapped={false} /></lineSegments>
       <mesh ref={glowRef} position={[0, 0, -0.04]}><planeGeometry args={[CELL_W + 0.4, CELL_H + 0.4]} /><meshStandardMaterial color={accentColor} emissive={accentColor} emissiveIntensity={1.5} transparent opacity={0} depthWrite={false} toneMapped={false} /></mesh>
 
-      {/* ИСПРАВЛЕНА ОШИБКА БЛОКИРОВКИ СКРОЛЛА (УДАЛЕН MAXHEIGHT И OVERFLOWY) */}
       {projectCard && cardOpacity > 0.01 && (
-        <Html center style={{ opacity: cardOpacity, transition: 'opacity 0.1s linear', pointerEvents: cardOpacity < 0.1 ? 'none' : 'auto', width: 'min(1020px, 92vw)', fontFamily: DISPLAY }}>
-          <div style={{ background: 'rgba(4, 5, 10, 0.98)', border: `1px solid ${accentColor}44`, borderLeft: `5px solid ${accentColor}`, borderRadius: '16px', padding: '22px 30px', boxShadow: '0 32px 64px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.04)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}>
+        <Html center style={{ opacity: cardOpacity, transition: 'opacity 0.1s linear', pointerEvents: cardOpacity < 0.1 ? 'none' : 'auto', width: 'min(1020px, 92vw)', fontFamily: DISPLAY, zIndex: 100 }}>
+          
+          {/* Стили для кастомного ползунка скролла */}
+          <style>{`
+            .project-card-scroll::-webkit-scrollbar { width: 6px; }
+            .project-card-scroll::-webkit-scrollbar-track { background: transparent; }
+            .project-card-scroll::-webkit-scrollbar-thumb { background: ${accentColor}88; border-radius: 10px; }
+            .project-card-scroll::-webkit-scrollbar-thumb:hover { background: ${accentColor}; }
+          `}</style>
+          
+          <div className="project-card-scroll" style={{ 
+            background: 'rgba(4, 5, 10, 0.98)', 
+            border: `1px solid ${accentColor}44`, 
+            borderLeft: `5px solid ${accentColor}`, 
+            borderRadius: '16px', 
+            padding: '30px 40px', 
+            boxShadow: '0 32px 64px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.04)', 
+            backdropFilter: 'blur(20px)', 
+            WebkitBackdropFilter: 'blur(20px)',
+            
+            /* ВОЗВРАЩАЕМ ВНУТРЕННИЙ СКРОЛЛ КАРТОЧКАМ */
+            maxHeight: '85vh', 
+            overflowY: 'auto',
+            /* МАГИЯ: Это свойство не дает скроллить весь сайт, пока ты скроллишь внутри карточки! */
+            overscrollBehavior: 'contain'
+          }}>
             {projectCard === 'sae'    && <SaeCard   />}
             {projectCard === 'stage'  && <StageCard />}
             {projectCard === 'reserv' && <ReservCard />}
