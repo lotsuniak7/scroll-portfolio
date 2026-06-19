@@ -385,7 +385,7 @@ function StageCard() {
   ]
 
   const acList: { code: string; label: string; mastery: MasteryLevel }[] = [
-    { code: 'AC34.05', label: 'Gestion des serveurs & déploiement',     mastery: 'Maîtrise avancée' },
+    { code: 'AC34.05', label: 'Gestion des serveurs & déploiement',     mastery: 'Maîtrisé' },
     { code: 'AC35.01', label: 'Gérer un projet de bout en bout',        mastery: 'Maîtrisé'         },
     { code: 'AC35.04', label: 'Argumenter et défendre ses choix',       mastery: 'Maîtrisé'         },
   ]
@@ -471,8 +471,8 @@ function ReservCard() {
   ]
 
   const acList: { code: string; label: string; mastery: MasteryLevel }[] = [
-    { code: 'AC34.01', label: 'Framework client (React / Next.js)',      mastery: 'Maîtrise avancée' },
-    { code: 'AC34.03', label: 'Dispositifs interactifs complexes',       mastery: 'Maîtrise avancée' },
+    { code: 'AC34.01', label: 'Framework client (React / Next.js)',      mastery: 'Maîtrisé' },
+    { code: 'AC34.03', label: 'Dispositifs interactifs complexes',       mastery: 'Maîtrisé' },
     { code: 'AC35.01', label: 'Pilotage technique d\'un produit',        mastery: 'Maîtrisé'         },
   ]
 
