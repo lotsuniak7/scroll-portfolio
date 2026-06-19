@@ -40,7 +40,7 @@ export function Overlay() {
           <h1 className="hl" style={{ fontSize: 'clamp(2.8rem, 7vw, 6.5rem)', fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 0.95, margin: '0 0 4px 0' }}>
             Portfolio de
           </h1>
-          <h1 className="hl" style={{ fontSize: 'clamp(2.8rem, 7vw, 6.5rem)', fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 0.95, WebkitTextStroke: '1px rgba(255,255,255,0.3)', color: 'transparent', margin: '0 0 24px 0' }}>
+          <h1 className="hl" style={{ fontSize: 'clamp(2.8rem, 7vw, 6.5rem)', fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 0.95, margin: '0 0 24px 0' }}>
             Compétences
           </h1>
           <p className="hl" style={{ fontFamily: DISPLAY, fontSize: '16px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, maxWidth: '65ch', fontWeight: 400 }}>

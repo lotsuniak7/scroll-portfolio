@@ -63,6 +63,7 @@ function CameraRig() {
         start:   'top top',
         end:     'bottom bottom',
         scrub:   1.1,
+        // Блок snap удален! Больше никакого самоуправства скролла.
         onUpdate: (self) => { scrollProxy.progress = self.progress },
       },
     })
@@ -75,7 +76,7 @@ function CameraRig() {
     tl.to(camState, { ...POSES.stage, duration: 0.11, ease: "power2.inOut" }, 0.32)
     tl.to({}, { duration: 0.17 }, 0.43) // Остановка (Hold) для Stage
     
-    // 3. Перелет к Réservation (РАНЬШЕ ЭТОГО НЕ БЫЛО)
+    // 3. Перелет к Réservation
     tl.to(camState, { ...POSES.reserv, duration: 0.11, ease: "power2.inOut" }, 0.60)
     tl.to({}, { duration: 0.17 }, 0.71) // Остановка (Hold) для Réservation
     
