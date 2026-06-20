@@ -349,7 +349,7 @@ function SaeCard() {
       <HoloDivider />
 
       <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
-        <a href="https://github.com/votre-github/sae501" target="_blank" rel="noopener noreferrer" style={{ background: EMERALD, color: '#000000', fontFamily: MONO, fontSize: '11px', fontWeight: 700, padding: '9px 18px', borderRadius: '6px', textDecoration: 'none', letterSpacing: '0.05em' }}>
+        <a href="https://github.com/sae501" target="_blank" rel="noopener noreferrer" style={{ background: EMERALD, color: '#000000', fontFamily: MONO, fontSize: '11px', fontWeight: 700, padding: '9px 18px', borderRadius: '6px', textDecoration: 'none', letterSpacing: '0.05em' }}>
           VOIR LE CODE SOURCE →
         </a>
       </div>
